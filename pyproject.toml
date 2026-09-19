@@ -1,2 +1,17 @@
+[project]
+name = "gala-boutique"
+version = "0.1.0"
+description = "Gala Butik E-Commerce Platform"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "Django>=5.1.0",
+    "pillow>=10.0.0",
+    "whitenoise>=6.8.0",
+    "sqlparse>=0.5.0",
+    "asgiref>=3.8.0",
+    "tzdata"
+]
+
 [tool.vercel]
 entrypoint = "wsgi.py"

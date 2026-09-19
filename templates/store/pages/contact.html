@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}İletişim & Mağazamız | {{ boutique.name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    
+    <div class="text-center max-w-xl mx-auto mb-12">
+        <span class="text-xs font-bold uppercase tracking-widest text-[#B85032]">Müşteri Destek & İletişim</span>
+        <h1 class="font-serif text-3xl sm:text-4xl font-bold text-[#2B2623] mt-1">Bize Ulaşın</h1>
+        <p class="text-xs text-[#786C63] mt-2">Sorularınız, beden danışmanlığı veya sipariş desteği için buradayız.</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <!-- Left: Contact Info & WhatsApp Box -->
+        <div class="lg:col-span-5 space-y-6">
+            
+            <div class="bg-white p-6 rounded-2xl border border-[#EAE3D9] shadow-sm space-y-4">
+                <h3 class="font-serif text-xl font-bold text-[#2B2623]">İletişim Bilgileri</h3>
+                
+                <div class="space-y-4 text-xs text-[#786C63]">
+                    <div class="flex items-start gap-3">
+                        <div class="w-8 h-8 rounded-full bg-[#FAF7F2] flex items-center justify-center text-[#B85032] flex-shrink-0">
+                            <i data-lucide="map-pin" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <p class="font-bold text-[#2B2623]">Mağaza & Merkez Adresimiz</p>
+                            <p>{{ boutique.address }}</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-3">
+                        <div class="w-8 h-8 rounded-full bg-[#FAF7F2] flex items-center justify-center text-[#B85032] flex-shrink-0">
+                            <i data-lucide="phone" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <p class="font-bold text-[#2B2623]">Telefon Destek Hattı</p>
+                            <p>{{ boutique.phone }} (Hafta içi 09:00 - 18:00)</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-3">
+                        <div class="w-8 h-8 rounded-full bg-[#FAF7F2] flex items-center justify-center text-[#B85032] flex-shrink-0">
+                            <i data-lucide="mail" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <p class="font-bold text-[#2B2623]">E-Posta</p>
+                            <p>{{ boutique.email }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- WhatsApp Fast Box -->
+                <div class="bg-[#25D366]/10 border border-[#25D366]/30 p-4 rounded-xl flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold text-[#1e8341]">WhatsApp Sipariş & Beden Hattı</p>
+                        <p class="text-[11px] text-[#333]">Anında fotoğraflı beden önerisi alın</p>
+                    </div>
+                    <a href="https://wa.me/{{ boutique.whatsapp|cut:' '|cut:'+'|cut:'('|cut:')'|cut:'-' }}" target="_blank" class="bg-[#25D366] text-white text-xs font-bold px-3 py-2 rounded-lg hover:bg-[#1eb857] transition-colors flex items-center gap-1">
+                        <i data-lucide="message-circle" class="w-4 h-4"></i>
+                        <span>Mesaj Yaz</span>
+                    </a>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Right: Message Form -->
+        <div class="lg:col-span-7 bg-white p-6 sm:p-8 rounded-2xl border border-[#EAE3D9] shadow-sm">
+            <h3 class="font-serif text-xl font-bold text-[#2B2623] mb-4">Mesaj Gönderin</h3>
+            
+            <form action="{% url 'store:contact' %}" method="POST" class="space-y-4">
+                {% csrf_token %}
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-[#2B2623] mb-1">Adınız Soyadınız *</label>
+                        <input type="text" required placeholder="Adınız Soyadınız" class="w-full bg-[#FAF7F2] border border-[#EAE3D9] rounded-lg p-2.5 text-xs focus:outline-none focus:border-[#B85032]">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-[#2B2623] mb-1">E-Posta Adresiniz *</label>
+                        <input type="email" required placeholder="ornek@mail.com" class="w-full bg-[#FAF7F2] border border-[#EAE3D9] rounded-lg p-2.5 text-xs focus:outline-none focus:border-[#B85032]">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-[#2B2623] mb-1">Konu</label>
+                    <input type="text" placeholder="Sipariş, beden, iade vb." class="w-full bg-[#FAF7F2] border border-[#EAE3D9] rounded-lg p-2.5 text-xs focus:outline-none focus:border-[#B85032]">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-[#2B2623] mb-1">Mesajınız *</label>
+                    <textarea rows="4" required placeholder="Mesajınızı buraya yazabilirsiniz..." class="w-full bg-[#FAF7F2] border border-[#EAE3D9] rounded-lg p-2.5 text-xs focus:outline-none focus:border-[#B85032]"></textarea>
+                </div>
+
+                <button type="submit" class="btn-boutique text-xs px-8 py-3">
+                    Mesajı İlet
+                </button>
+            </form>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

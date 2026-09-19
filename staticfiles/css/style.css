@@ -1,0 +1,284 @@
+/* Gala Butik - Deniz Butik Inspired Warm Boutique Theme */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  --bg-primary: #FAF7F2;
+  --bg-secondary: #F3EDE2;
+  --bg-card: #FFFFFF;
+  --accent-terracotta: #B85032;
+  --accent-terracotta-hover: #9E3F24;
+  --accent-terracotta-light: #FBF0EB;
+  --accent-terracotta-border: #F3D3C8;
+  --accent-gold: #C5A880;
+  --text-dark: #2B2623;
+  --text-muted: #786C63;
+  --text-light: #9E938B;
+  --border-light: #EAE3D9;
+  --border-dark: #D4C9BC;
+  --font-serif: 'Cormorant Garamond', Georgia, serif;
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --shadow-sm: 0 2px 8px rgba(43, 38, 35, 0.04);
+  --shadow-md: 0 4px 20px rgba(43, 38, 35, 0.08);
+  --shadow-lg: 0 10px 30px rgba(43, 38, 35, 0.12);
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --transition-fast: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-smooth: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-primary);
+  color: var(--text-dark);
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-serif {
+  font-family: var(--font-serif);
+}
+
+.font-sans {
+  font-family: var(--font-sans);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-dark);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-terracotta);
+}
+
+/* Boutique Buttons */
+.btn-boutique {
+  background-color: var(--accent-terracotta);
+  color: #ffffff;
+  font-weight: 600;
+  padding: 0.75rem 1.75rem;
+  border-radius: var(--radius-sm);
+  transition: var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 1px solid var(--accent-terracotta);
+  text-decoration: none;
+  cursor: pointer;
+}
+.btn-boutique:hover {
+  background-color: var(--accent-terracotta-hover);
+  border-color: var(--accent-terracotta-hover);
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(184, 80, 50, 0.25);
+}
+
+.btn-boutique-outline {
+  background-color: transparent;
+  color: var(--accent-terracotta);
+  font-weight: 600;
+  padding: 0.75rem 1.75rem;
+  border-radius: var(--radius-sm);
+  transition: var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 1.5px solid var(--accent-terracotta);
+  text-decoration: none;
+  cursor: pointer;
+}
+.btn-boutique-outline:hover {
+  background-color: var(--accent-terracotta-light);
+  color: var(--accent-terracotta-hover);
+  border-color: var(--accent-terracotta-hover);
+}
+
+.btn-boutique-secondary {
+  background-color: var(--bg-secondary);
+  color: var(--text-dark);
+  font-weight: 600;
+  padding: 0.75rem 1.75rem;
+  border-radius: var(--radius-sm);
+  transition: var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 1px solid var(--border-light);
+  text-decoration: none;
+  cursor: pointer;
+}
+.btn-boutique-secondary:hover {
+  background-color: var(--border-light);
+  color: var(--text-dark);
+}
+
+/* Card Styling */
+.product-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition: var(--transition-smooth);
+  position: relative;
+}
+.product-card:hover {
+  border-color: var(--accent-terracotta-border);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-3px);
+}
+
+.product-image-container {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 3 / 4;
+  background-color: #F8F5F0;
+}
+.product-image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+.product-card:hover .product-image-container img {
+  transform: scale(1.05);
+}
+
+/* Badges */
+.badge-discount {
+  background-color: var(--accent-terracotta);
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.6rem;
+  border-radius: 4px;
+}
+
+.badge-new {
+  background-color: #2B2623;
+  color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.25rem 0.6rem;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.badge-bestseller {
+  background-color: #D97706;
+  color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.25rem 0.6rem;
+  border-radius: 4px;
+}
+
+/* Size Pills */
+.size-pill {
+  border: 1px solid var(--border-light);
+  background: #ffffff;
+  color: var(--text-dark);
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.4rem 0.85rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  user-select: none;
+}
+.size-pill:hover {
+  border-color: var(--accent-terracotta);
+  color: var(--accent-terracotta);
+  background-color: var(--accent-terracotta-light);
+}
+.size-pill.active {
+  border-color: var(--accent-terracotta);
+  background-color: var(--accent-terracotta);
+  color: #ffffff;
+}
+.size-pill.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  text-decoration: line-through;
+  background: #f5f5f5;
+  border-color: #eee;
+}
+
+/* Progress bar for free shipping */
+.shipping-progress-track {
+  height: 6px;
+  background-color: #EAE3D9;
+  border-radius: 3px;
+  overflow: hidden;
+}
+.shipping-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #D48B6F, #B85032);
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+/* Installment Table */
+.installment-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+.installment-table th, .installment-table td {
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--border-light);
+  text-align: center;
+}
+.installment-table th {
+  background-color: var(--bg-secondary);
+  font-weight: 600;
+  color: var(--text-dark);
+}
+.installment-table tr:hover {
+  background-color: var(--accent-terracotta-light);
+}
+
+/* Mega menu & Dropdowns */
+.nav-item-dropdown:hover .mega-dropdown {
+  display: block;
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.mega-dropdown {
+  display: none;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: all 0.25s ease;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border-bottom: 2px solid var(--accent-terracotta);
+  box-shadow: var(--shadow-lg);
+  z-index: 50;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+  animation: fadeIn 0.3s ease forwards;
+}

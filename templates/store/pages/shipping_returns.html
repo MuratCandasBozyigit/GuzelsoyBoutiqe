@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load static humanize %}
+
+{% block title %}Kargo, Teslimat ve İade Şartları | {{ boutique.name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    
+    <div class="bg-white rounded-2xl border border-[#EAE3D9] p-8 sm:p-12 shadow-sm space-y-8">
+        
+        <div class="text-center max-w-2xl mx-auto space-y-2">
+            <span class="text-xs font-bold uppercase tracking-widest text-[#B85032]">Müşteri Güvencesi</span>
+            <h1 class="font-serif text-3xl sm:text-4xl font-bold text-[#2B2623]">
+                Kargo, Teslimat ve Kolay İade
+            </h1>
+            <div class="w-16 h-0.5 bg-[#B85032] mx-auto mt-2"></div>
+        </div>
+
+        <div class="space-y-6 text-xs sm:text-sm text-[#786C63] leading-relaxed">
+            
+            <section class="space-y-3">
+                <h3 class="font-serif text-xl font-bold text-[#2B2623] flex items-center gap-2">
+                    <i data-lucide="truck" class="w-5 h-5 text-[#B85032]"></i>
+                    Kargo ve Teslimat Süreci
+                </h3>
+                <p>
+                    Gala Butik'ten verilen tüm siparişler, stoktan aynı gün veya en geç <strong>24 iş saati</strong> içerisinde anlaşmalı kargo firmamız (Yurtiçi Kargo) güvencesiyle sevk edilir.
+                </p>
+                <ul class="list-disc list-inside space-y-1 pl-2">
+                    <li><strong>{{ boutique.free_shipping_threshold|intcomma }} TL</strong> ve üzeri tüm siparişlerinizde kargo <strong>ÜCRETSİZDİR</strong>.</li>
+                    <li>Bu tutarın altındaki siparişlerde standart kargo ücreti <strong>{{ boutique.default_shipping_fee|floatformat:2 }} TL</strong>'dir.</li>
+                    <li>Siparişiniz kargoya verildiğinde tarafınıza SMS ve E-posta yoluyla kargo takip numarası iletilir.</li>
+                </ul>
+            </section>
+
+            <section class="space-y-3 pt-6 border-t border-[#EAE3D9]">
+                <h3 class="font-serif text-xl font-bold text-[#2B2623] flex items-center gap-2">
+                    <i data-lucide="rotate-ccw" class="w-5 h-5 text-[#B85032]"></i>
+                    14 Gün Koşulsuz Kolay İade ve Değişim
+                </h3>
+                <p>
+                    Sipariş ettiğiniz ürünleri teslim aldığınız tarihten itibaren <strong>14 gün</strong> içerisinde herhangi bir gerekçe göstermeksizin iade edebilir veya beden değişimi talep edebilirsiniz.
+                </p>
+                <div class="bg-[#FAF7F2] p-4 rounded-xl border border-[#EAE3D9] text-xs space-y-2">
+                    <p class="font-bold text-[#2B2623]">İade ve Değişim Koşulları:</p>
+                    <ul class="list-disc list-inside space-y-1">
+                        <li>Ürünün kullanılmamış, yıkanmamış ve etiketlerinin koparılmamış olması gerekmektedir.</li>
+                        <li>Anlaşmalı kargo kodumuz ile iade gönderilerini ücretsiz olarak gönderebilirsiniz.</li>
+                        <li>İade edilen ürün depomuza ulaştıktan sonra 2 iş günü içinde kontrol edilir ve ücretiniz kartınıza iade edilir.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section class="space-y-3 pt-6 border-t border-[#EAE3D9]">
+                <h3 class="font-serif text-xl font-bold text-[#2B2623] flex items-center gap-2">
+                    <i data-lucide="credit-card" class="w-5 h-5 text-[#B85032]"></i>
+                    Taksit ve Ödeme Kuralları
+                </h3>
+                <p>
+                    Ticaret Bakanlığı ve BDDK düzenlemeleri uyarınca, hazır giyim ve tekstil alışverişlerinde kredi kartlarına en fazla <strong>3 taksit</strong> uygulanabilmektedir. Gala Butik üzerinden anlaşmalı tüm banka kartlarıyla vade farksız 3 taksit avantajından faydalanabilirsiniz.
+                </p>
+            </section>
+
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

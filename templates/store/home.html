@@ -1,0 +1,361 @@
+{% extends 'base.html' %}
+{% load static humanize %}
+
+{% block title %}{{ boutique.name }} | Büyük Beden Şıklık ve Zarafet{% endblock %}
+
+{% block content %}
+
+<!-- Hero Banner Section (Warm Boutique Atmosphere) -->
+<section class="relative bg-[#F3EDE2] overflow-hidden border-b border-[#EAE3D9]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            
+            <!-- Left Text Content -->
+            <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+                <div class="inline-flex items-center gap-2 bg-[#FAF7F2] border border-[#EAE3D9] px-4 py-1.5 rounded-full shadow-sm">
+                    <span class="w-2 h-2 rounded-full bg-[#B85032] animate-pulse"></span>
+                    <span class="text-xs font-bold uppercase tracking-widest text-[#B85032]">2026 Yeni Sezon Koleksiyonu</span>
+                </div>
+                
+                <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold text-[#2B2623] leading-tight">
+                    Her Bedende <br class="hidden sm:inline" />
+                    <span class="text-[#B85032] italic font-normal">Zarafet</span> ve Kusursuz Konfor.
+                </h1>
+
+                <p class="text-base sm:text-lg text-[#786C63] max-w-xl mx-auto lg:mx-0 leading-relaxed">
+                    42’den 58 bedene kadar özel olarak tasarlanmış dökümlü elbiseler, modern tunikler ve triko takımlarla stilinizi özgürce yansıtın.
+                </p>
+
+                <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-2">
+                    <a href="{% url 'store:product_list' %}" class="btn-boutique text-sm px-8 py-4 shadow-md">
+                        <span>Yeni Sezonu Keşfet</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </a>
+                    <a href="{% url 'store:size_guide' %}" class="btn-boutique-outline text-sm px-7 py-4 bg-white/50">
+                        <i data-lucide="ruler" class="w-4 h-4"></i>
+                        <span>Büyük Beden Rehberi</span>
+                    </a>
+                </div>
+
+                <!-- Trust Badges Under Hero -->
+                <div class="pt-6 border-t border-[#EAE3D9] grid grid-cols-3 gap-4 text-left max-w-md mx-auto lg:mx-0">
+                    <div>
+                        <p class="text-xl font-bold text-[#2B2623] font-serif">42 - 58</p>
+                        <p class="text-xs text-[#786C63]">Geniş Beden Seçeneği</p>
+                    </div>
+                    <div>
+                        <p class="text-xl font-bold text-[#B85032] font-serif">3 Taksit</p>
+                        <p class="text-xs text-[#786C63]">Tüm Kartlara Vade Farksız</p>
+                    </div>
+                    <div>
+                        <p class="text-xl font-bold text-[#2B2623] font-serif">%100</p>
+                        <p class="text-xs text-[#786C63]">Yerli Üretim & Kalite</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Hero Image Showcase -->
+            <div class="lg:col-span-5 relative">
+                <div class="relative mx-auto max-w-md lg:max-w-none">
+                    <div class="aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl border-4 border-white bg-[#EAE3D9]">
+                        <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=800&auto=format&fit=crop" 
+                             alt="Gala Butik Yeni Sezon Büyük Beden Kadın Modası" 
+                             class="w-full h-full object-cover">
+                    </div>
+                    
+                    <!-- Floating Highlight Card -->
+                    <div class="absolute -bottom-6 -left-6 bg-white p-4 rounded-xl shadow-xl border border-[#EAE3D9] flex items-center gap-3 hidden sm:flex">
+                        <div class="w-12 h-12 rounded-lg bg-[#FBF0EB] flex items-center justify-center text-[#B85032] font-serif text-xl font-bold">
+                            GLA
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-[#2B2623]">Haftanın Favorisi</p>
+                            <p class="text-[11px] text-[#786C63]">Dökümlü Viskon Elbiseler</p>
+                            <span class="text-xs font-extrabold text-[#B85032]">42-56 Beden Aralığı</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- Featured Category Cards Grid -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div class="text-center max-w-2xl mx-auto mb-12">
+        <h2 class="font-serif text-3xl sm:text-4xl font-bold text-[#2B2623]">Kategorileri Keşfedin</h2>
+        <div class="w-16 h-0.5 bg-[#B85032] mx-auto mt-3 mb-3"></div>
+        <p class="text-sm text-[#786C63]">Günün her anında kendinizi özel hissettirecek seçkin tasarımlar</p>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6">
+        {% if featured_categories %}
+            {% for cat in featured_categories %}
+            <a href="{{ cat.get_absolute_url }}" class="group flex flex-col items-center text-center p-3 rounded-xl bg-white border border-[#EAE3D9] hover:border-[#B85032] hover:shadow-md transition-all">
+                <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden mb-3 border-2 border-[#FAF7F2] group-hover:border-[#B85032] transition-colors shadow-inner bg-[#F3EDE2]">
+                    {% if cat.image %}
+                    <img src="{{ cat.image.url }}" alt="{{ cat.name }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                    {% else %}
+                    <img src="https://images.unsplash.com/photo-1539109136881-3be0616acf4b?q=80&w=300&auto=format&fit=crop" alt="{{ cat.name }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                    {% endif %}
+                </div>
+                <h3 class="text-xs sm:text-sm font-bold text-[#2B2623] group-hover:text-[#B85032] transition-colors">{{ cat.name }}</h3>
+                <span class="text-[11px] text-[#9E938B] mt-0.5">{{ cat.product_count }} Ürün</span>
+            </a>
+            {% endfor %}
+        {% else %}
+            <!-- Default placeholder cards -->
+            <a href="{% url 'store:product_list' %}" class="group flex flex-col items-center text-center p-3 rounded-xl bg-white border border-[#EAE3D9] hover:border-[#B85032] transition-all">
+                <div class="w-20 h-20 rounded-full overflow-hidden mb-3 bg-[#F3EDE2]">
+                    <img src="https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?q=80&w=300&auto=format&fit=crop" class="w-full h-full object-cover">
+                </div>
+                <h3 class="text-xs font-bold text-[#2B2623]">Büyük Beden Elbise</h3>
+            </a>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Yeni Sezon Koleksiyonu (Product Showcase) -->
+<section class="bg-white py-16 border-t border-b border-[#EAE3D9]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-10">
+            <div>
+                <span class="text-xs font-bold uppercase tracking-wider text-[#B85032]">Yeni Eklenenler</span>
+                <h2 class="font-serif text-3xl font-bold text-[#2B2623]">Yeni Sezon Vitrini</h2>
+            </div>
+            <a href="{% url 'store:product_list' %}" class="btn-boutique-outline text-xs px-5 py-2.5">
+                <span>Tümünü Gör</span>
+                <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+            </a>
+        </div>
+
+        <!-- Product Grid -->
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+            {% for product in new_arrivals %}
+            <div class="product-card flex flex-col justify-between">
+                
+                <!-- Product Image & Badges -->
+                <div class="product-image-container">
+                    <a href="{{ product.get_absolute_url }}">
+                        <img src="{{ product.primary_image.url|default:'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=600&auto=format&fit=crop' }}" 
+                             alt="{{ product.name }}" 
+                             loading="lazy">
+                    </a>
+
+                    <!-- Top Badges -->
+                    <div class="absolute top-2.5 left-2.5 flex flex-col gap-1.5 z-10">
+                        {% if product.has_discount %}
+                        <span class="badge-discount">-%{{ product.discount_percent }}</span>
+                        {% endif %}
+                        {% if product.is_new %}
+                        <span class="badge-new">Yeni</span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Available Sizes Strip -->
+                    <div class="absolute bottom-0 inset-x-0 bg-white/95 backdrop-blur-sm px-2 py-1.5 text-[11px] text-[#786C63] text-center border-t border-[#EAE3D9] flex items-center justify-center gap-1.5 flex-wrap">
+                        <span class="font-bold text-[#2B2623]">Bedenler:</span>
+                        {% for variant in product.size_variants.all|slice:":4" %}
+                        <span class="px-1 rounded bg-[#F3EDE2] text-[#2B2623] font-medium">{{ variant.size }}</span>
+                        {% empty %}
+                        <span>Standart</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Product Details -->
+                <div class="p-4 flex flex-col flex-1 justify-between">
+                    <div>
+                        <span class="text-[11px] uppercase font-semibold text-[#B85032] tracking-wider">{{ product.category.name }}</span>
+                        <h3 class="text-sm font-bold text-[#2B2623] mt-1 line-clamp-2 hover:text-[#B85032] transition-colors">
+                            <a href="{{ product.get_absolute_url }}">{{ product.name }}</a>
+                        </h3>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-t border-[#F3EDE2]">
+                        <div class="flex items-baseline gap-2">
+                            <span class="text-base font-extrabold text-[#2B2623]">{{ product.current_price|floatformat:2 }} ₺</span>
+                            {% if product.has_discount %}
+                            <span class="text-xs text-gray-400 line-through">{{ product.price|floatformat:2 }} ₺</span>
+                            {% endif %}
+                        </div>
+
+                        <!-- 3 Installments Highlight -->
+                        <p class="text-[11px] text-[#786C63] mt-1 flex items-center gap-1">
+                            <i data-lucide="credit-card" class="w-3 h-3 text-[#B85032]"></i>
+                            <span>3 x <strong class="text-[#B85032]">{{ product.installment_3x|floatformat:2 }} ₺</strong> (Vade Farksız)</span>
+                        </p>
+
+                        <!-- Quick Add Form -->
+                        <form action="{% url 'store:add_to_cart' %}" method="POST" class="ajax-add-to-cart mt-3">
+                            {% csrf_token %}
+                            <input type="hidden" name="product_id" value="{{ product.id }}">
+                            {% with first_variant=product.size_variants.first %}
+                                {% if first_variant %}
+                                <input type="hidden" name="size_variant_id" value="{{ first_variant.id }}">
+                                {% endif %}
+                            {% endwith %}
+                            <button type="submit" class="w-full bg-[#FAF7F2] hover:bg-[#B85032] text-[#2B2623] hover:text-white border border-[#EAE3D9] hover:border-[#B85032] text-xs font-bold py-2 rounded transition-all flex items-center justify-center gap-1.5 shadow-sm">
+                                <i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i>
+                                <span>Sepete Ekle</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+            {% endfor %}
+        </div>
+
+    </div>
+</section>
+
+<!-- Promotional Showcase Banner (Deniz Butik Style Highlight) -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div class="relative rounded-2xl overflow-hidden bg-[#2B2623] text-white shadow-xl">
+        <div class="grid grid-cols-1 lg:grid-cols-2 items-center">
+            
+            <div class="p-8 sm:p-12 lg:p-16 space-y-6">
+                <span class="inline-block bg-[#B85032] text-white text-xs uppercase font-bold tracking-widest px-3 py-1 rounded">
+                    Özel Kalıp & Kumaş Teknolojisi
+                </span>
+                <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight">
+                    Dökümlü ve Nefes Alan <br />
+                    <span class="text-[#D48B6F] italic">Viskon & Triko</span> Zarafeti
+                </h2>
+                <p class="text-sm text-[#D4C9BC] leading-relaxed">
+                    Vücudu sıkmayan, toparlayıcı ve dökümlü kumaşlarımızla gün boyu hem şık hem de hafif hissedin. 42'den 58'e tüm bedenlerde kusursuz uyum.
+                </p>
+                <div class="pt-2">
+                    <a href="{% url 'store:product_list' %}" class="btn-boutique text-sm px-8 py-3.5">
+                        Koleksiyonu İncele
+                    </a>
+                </div>
+            </div>
+
+            <div class="relative h-64 lg:h-full min-h-[300px]">
+                <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=800&auto=format&fit=crop" 
+                     alt="Büyük Beden Giyim Koleksiyonu" 
+                     class="w-full h-full object-cover opacity-90">
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- Çok Satanlar (Bestsellers Section) -->
+<section class="bg-[#FAF7F2] py-16 border-t border-[#EAE3D9]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="text-center max-w-2xl mx-auto mb-10">
+            <span class="text-xs font-bold uppercase tracking-wider text-[#B85032]">Müşterilerimizin Favorileri</span>
+            <h2 class="font-serif text-3xl font-bold text-[#2B2623] mt-1">En Çok Tercih Edilenler</h2>
+            <div class="w-16 h-0.5 bg-[#B85032] mx-auto mt-3"></div>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+            {% for product in bestsellers %}
+            <div class="product-card flex flex-col justify-between">
+                
+                <div class="product-image-container">
+                    <a href="{{ product.get_absolute_url }}">
+                        <img src="{{ product.primary_image.url|default:'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=600&auto=format&fit=crop' }}" 
+                             alt="{{ product.name }}" 
+                             loading="lazy">
+                    </a>
+
+                    <div class="absolute top-2.5 left-2.5 flex flex-col gap-1.5 z-10">
+                        <span class="badge-bestseller">🔥 Çok Satan</span>
+                        {% if product.has_discount %}
+                        <span class="badge-discount">-%{{ product.discount_percent }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="p-4 flex flex-col flex-1 justify-between">
+                    <div>
+                        <span class="text-[11px] uppercase font-semibold text-[#B85032]">{{ product.category.name }}</span>
+                        <h3 class="text-sm font-bold text-[#2B2623] mt-1 line-clamp-2 hover:text-[#B85032]">
+                            <a href="{{ product.get_absolute_url }}">{{ product.name }}</a>
+                        </h3>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-t border-[#F3EDE2]">
+                        <div class="flex items-baseline gap-2">
+                            <span class="text-base font-extrabold text-[#2B2623]">{{ product.current_price|floatformat:2 }} ₺</span>
+                            {% if product.has_discount %}
+                            <span class="text-xs text-gray-400 line-through">{{ product.price|floatformat:2 }} ₺</span>
+                            {% endif %}
+                        </div>
+
+                        <p class="text-[11px] text-[#786C63] mt-1">
+                            3 Taksit x <strong class="text-[#B85032]">{{ product.installment_3x|floatformat:2 }} ₺</strong>
+                        </p>
+
+                        <a href="{{ product.get_absolute_url }}" class="block text-center mt-3 bg-white hover:bg-[#FAF7F2] text-[#B85032] border border-[#B85032] text-xs font-bold py-2 rounded transition-colors">
+                            Detayları İncele
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+            {% endfor %}
+        </div>
+
+    </div>
+</section>
+
+<!-- Customer Reviews Section (Authentic Turkish Boutique Testimonials) -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div class="text-center max-w-xl mx-auto mb-12">
+        <h2 class="font-serif text-3xl font-bold text-[#2B2623]">Mutlu Müşteri Yorumları</h2>
+        <p class="text-xs text-[#786C63] mt-1">Gala Butik ailesinden binlerce memnun kadın</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <div class="bg-white p-6 rounded-xl border border-[#EAE3D9] shadow-sm space-y-3">
+            <div class="flex text-amber-500 text-sm">
+                ★★★★★
+            </div>
+            <p class="text-xs text-[#2B2623] leading-relaxed italic">
+                "48 bedenim ve genelde internetten elbise alırken kalıptan korkarım. Gala Butik'ten aldığım viskon elbise tam üzerime oturdu, kumaşı o kadar hafif ve dökümlü ki bayıldım!"
+            </p>
+            <div class="pt-2 border-t border-gray-100 flex items-center justify-between text-xs">
+                <span class="font-bold text-[#2B2623]">Sevgi K.</span>
+                <span class="text-[11px] text-green-600 font-semibold">✓ Doğrulanmış Alıcı (İzmir)</span>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl border border-[#EAE3D9] shadow-sm space-y-3">
+            <div class="flex text-amber-500 text-sm">
+                ★★★★★
+            </div>
+            <p class="text-xs text-[#2B2623] leading-relaxed italic">
+                "Kargo ertesi gün kapımdaydı. İkili takımın kumaş kalitesi ve dikişleri kusursuz. Kredi kartına 3 taksit yapılması da çok rahatlatıcı oldu. Teşekkürler Gala Butik!"
+            </p>
+            <div class="pt-2 border-t border-gray-100 flex items-center justify-between text-xs">
+                <span class="font-bold text-[#2B2623]">Nurcan T.</span>
+                <span class="text-[11px] text-green-600 font-semibold">✓ Doğrulanmış Alıcı (Ankara)</span>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl border border-[#EAE3D9] shadow-sm space-y-3">
+            <div class="flex text-amber-500 text-sm">
+                ★★★★★
+            </div>
+            <p class="text-xs text-[#2B2623] leading-relaxed italic">
+                "Büyük beden modasında hem modern hem de zarif modeller bulmak zordu. Triko tuniklerin kalıbı ve renkleri fotoğraftakinden bile daha güzel geldi. Kesinlikle tavsiye ederim."
+            </p>
+            <div class="pt-2 border-t border-gray-100 flex items-center justify-between text-xs">
+                <span class="font-bold text-[#2B2623]">Emel A.</span>
+                <span class="text-[11px] text-green-600 font-semibold">✓ Doğrulanmış Alıcı (İstanbul)</span>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}

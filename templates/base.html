@@ -1,0 +1,535 @@
+{% load static humanize %}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ boutique.name }} | {{ boutique.slogan }}{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}{{ boutique.name }} - Deniz Butik zarafetinde, kaliteli kumaşlar ve modern tasarımlarla büyük beden kadın giyim koleksiyonu.{% endblock %}">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        terracotta: {
+                            50: '#FBF0EB',
+                            100: '#F3D3C8',
+                            500: '#B85032',
+                            600: '#9E3F24',
+                            700: '#7E2F18',
+                        },
+                        cream: {
+                            50: '#FCFAF7',
+                            100: '#FAF7F2',
+                            200: '#F3EDE2',
+                            300: '#EAE3D9',
+                        },
+                        charcoal: {
+                            800: '#3A332E',
+                            900: '#2B2623',
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+                        sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-cream-100 text-charcoal-900 font-sans flex flex-col min-h-screen">
+
+    <!-- Top Announcement Bar (Deniz Butik Style) -->
+    <div class="bg-[#2B2623] text-[#FAF7F2] text-xs py-2 px-4 border-b border-[#3E3834] font-medium tracking-wide">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center text-center gap-1">
+            <div class="flex items-center gap-2">
+                <span class="inline-block bg-[#B85032] text-white px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider">Fırsat</span>
+                <span>🎉 <strong>{{ boutique.free_shipping_threshold|intcomma }} TL</strong> ve Üzeri Siparişlerde <strong>Kargo ÜCRETSİZ!</strong></span>
+            </div>
+            <div class="hidden md:flex items-center gap-6 text-xs text-[#D4C9BC]">
+                <span class="flex items-center gap-1.5">
+                    <i data-lucide="credit-card" class="w-3.5 h-3.5 text-[#D48B6F]"></i>
+                    Tüm Kartlara <strong>Vade Farksız 3 Taksit</strong>
+                </span>
+                <span class="flex items-center gap-1.5">
+                    <i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-[#D48B6F]"></i>
+                    14 Gün Kolay Değişim & İade
+                </span>
+                <a href="tel:{{ boutique.phone }}" class="hover:text-white flex items-center gap-1 text-[#F3EDE2]">
+                    <i data-lucide="phone-call" class="w-3.5 h-3.5"></i>
+                    {{ boutique.phone }}
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Header -->
+    <header class="bg-white border-b border-[#EAE3D9] sticky top-0 z-40 shadow-sm transition-all duration-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20 gap-4">
+                
+                <!-- Mobile Menu Button -->
+                <div class="flex items-center lg:hidden">
+                    <button id="mobile-menu-btn" class="p-2 text-charcoal-900 hover:text-terracotta-500 focus:outline-none" aria-label="Menüyü Aç">
+                        <i data-lucide="menu" class="w-6 h-6"></i>
+                    </button>
+                </div>
+
+                <!-- Boutique Brand Logo -->
+                <div class="flex-shrink-0 flex items-center">
+                    <a href="{% url 'store:home' %}" class="text-left group flex flex-col items-center sm:items-start">
+                        <span class="font-serif text-3xl sm:text-4xl font-bold tracking-wider text-[#2B2623] group-hover:text-[#B85032] transition-colors">
+                            GALA <span class="font-light italic text-[#B85032]">Butik</span>
+                        </span>
+                        <span class="text-[9px] uppercase tracking-[0.25em] text-[#786C63] font-medium -mt-1 hidden sm:block">
+                            Büyük Beden & Zarafet
+                        </span>
+                    </a>
+                </div>
+
+                <!-- Desktop Search Bar -->
+                <div class="hidden lg:flex flex-1 max-w-md mx-8">
+                    <form action="{% url 'store:product_list' %}" method="GET" class="w-full relative">
+                        <input type="text" name="q" value="{{ request.GET.q|default:'' }}" placeholder="Elbise, tunik, triko veya ürün kodu ara..." 
+                               class="w-full bg-[#FAF7F2] border border-[#EAE3D9] rounded-full py-2.5 pl-5 pr-12 text-sm text-charcoal-900 focus:outline-none focus:border-[#B85032] focus:bg-white transition-all shadow-inner placeholder-[#9E938B]">
+                        <button type="submit" class="absolute right-1 top-1/2 -translate-y-1/2 w-9 h-9 bg-[#B85032] text-white rounded-full flex items-center justify-center hover:bg-[#9E3F24] transition-colors shadow-sm" aria-label="Ara">
+                            <i data-lucide="search" class="w-4 h-4"></i>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- User & Action Icons -->
+                <div class="flex items-center gap-3 sm:gap-6">
+                    
+                    <!-- Search Trigger for Mobile -->
+                    <button class="search-modal-trigger lg:hidden p-2 text-charcoal-900 hover:text-[#B85032]" aria-label="Arama">
+                        <i data-lucide="search" class="w-5 h-5"></i>
+                    </button>
+
+                    <!-- WhatsApp Quick Support -->
+                    <a href="https://wa.me/{{ boutique.whatsapp|cut:' '|cut:'+'|cut:'('|cut:')'|cut:'-' }}" target="_blank" rel="noopener noreferrer" 
+                       class="hidden sm:flex items-center gap-2 text-xs font-semibold text-[#25D366] bg-[#25D366]/10 px-3 py-1.5 rounded-full hover:bg-[#25D366]/20 transition-colors">
+                        <i data-lucide="message-circle" class="w-4 h-4"></i>
+                        <span>WhatsApp Destek</span>
+                    </a>
+
+                    <!-- Admin Link if staff -->
+                    {% if request.user.is_staff %}
+                    <a href="/admin/" class="hidden md:flex items-center gap-1 text-xs font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-full transition-colors">
+                        <i data-lucide="settings" class="w-3.5 h-3.5"></i>
+                        <span>Yönetim</span>
+                    </a>
+                    {% endif %}
+
+                    <!-- Cart Drawer Trigger Button -->
+                    <button class="cart-drawer-trigger relative flex items-center gap-2.5 bg-[#FAF7F2] hover:bg-[#F3EDE2] border border-[#EAE3D9] px-3.5 py-2 rounded-full transition-all text-charcoal-900 shadow-sm" aria-label="Sepetim">
+                        <div class="relative">
+                            <i data-lucide="shopping-bag" class="w-5 h-5 text-[#B85032]"></i>
+                            <span class="cart-badge-count absolute -top-2 -right-2 bg-[#B85032] text-white text-[11px] font-bold rounded-full w-5 h-5 flex items-center justify-center shadow" {% if cart_items_count == 0 %}style="display: none;"{% endif %}>
+                                {{ cart_items_count }}
+                            </span>
+                        </div>
+                        <div class="hidden sm:flex flex-col text-left">
+                            <span class="text-[10px] uppercase font-bold text-[#786C63] leading-none">Sepetim</span>
+                            <span class="cart-subtotal-val text-xs font-extrabold text-[#2B2623] leading-tight">
+                                {{ cart_subtotal|default:"0"|floatformat:2 }} ₺
+                            </span>
+                        </div>
+                    </button>
+
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Desktop Navigation Bar with Mega Dropdowns -->
+        <nav class="hidden lg:block border-t border-[#EAE3D9] bg-[#FAF7F2]">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <ul class="flex items-center justify-center space-x-8 text-sm font-semibold tracking-wide text-charcoal-900">
+                    <li>
+                        <a href="{% url 'store:home' %}" class="inline-block py-3.5 border-b-2 border-transparent hover:border-[#B85032] hover:text-[#B85032] transition-colors">
+                            Anasayfa
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'store:product_list' %}" class="inline-block py-3.5 border-b-2 border-transparent hover:border-[#B85032] hover:text-[#B85032] transition-colors">
+                            Tüm Koleksiyon
+                        </a>
+                    </li>
+                    {% for cat in nav_categories %}
+                    <li class="relative group nav-item-dropdown">
+                        <a href="{{ cat.get_absolute_url }}" class="inline-flex items-center gap-1 py-3.5 border-b-2 border-transparent group-hover:border-[#B85032] group-hover:text-[#B85032] transition-colors">
+                            <span>{{ cat.name }}</span>
+                            {% if cat.children.all %}
+                            <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-gray-400 group-hover:text-[#B85032] transition-transform group-hover:rotate-180"></i>
+                            {% endif %}
+                        </a>
+
+                        {% if cat.children.all %}
+                        <!-- Dropdown Menu -->
+                        <div class="absolute left-0 top-full w-60 bg-white border border-[#EAE3D9] shadow-lg rounded-b-lg py-2 hidden group-hover:block z-50 animate-fade-in">
+                            <a href="{{ cat.get_absolute_url }}" class="block px-4 py-2 text-xs font-bold uppercase tracking-wider text-[#B85032] hover:bg-[#FAF7F2] border-b border-[#F3EDE2]">
+                                Tüm {{ cat.name }} Ürünleri
+                            </a>
+                            {% for child in cat.children.all %}
+                            <a href="{{ child.get_absolute_url }}" class="block px-4 py-2 text-xs text-charcoal-900 hover:text-[#B85032] hover:bg-[#FAF7F2] transition-colors">
+                                {{ child.name }}
+                            </a>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                    <li>
+                        <a href="{% url 'store:product_list' %}?sort=bestseller" class="inline-flex items-center gap-1 py-3.5 text-[#B85032] hover:text-[#9E3F24] font-bold">
+                            <span class="inline-block w-2 h-2 rounded-full bg-[#B85032] animate-ping"></span>
+                            Çok Satanlar
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'store:product_list' %}?on_sale=1" class="inline-block py-3.5 text-[#D97706] hover:text-[#B45309] font-bold">
+                            Fırsat & İndirim
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'store:size_guide' %}" class="inline-block py-3.5 text-[#786C63] hover:text-[#2B2623]">
+                            Beden Tablosu
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Global Toast Alerts & Flash Messages Container -->
+    <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-auto">
+        {% if messages %}
+            {% for message in messages %}
+            <div class="flex items-center gap-3 p-4 rounded shadow-lg text-sm {% if message.tags == 'error' %}bg-[#dc2626] text-white{% elif message.tags == 'warning' %}bg-[#d97706] text-white{% else %}bg-[#2B2623] text-white border-l-4 border-[#B85032]{% endif %} animate-fade-in">
+                <i data-lucide="info" class="w-5 h-5 flex-shrink-0 text-[#D48B6F]"></i>
+                <span class="flex-1">{{ message }}</span>
+                <button class="text-gray-300 hover:text-white" onclick="this.parentElement.remove()">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Free Shipping & Service Highlights Banner -->
+    <section class="bg-[#F3EDE2] border-t border-b border-[#EAE3D9] py-10 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 text-center md:text-left">
+                
+                <div class="flex items-center justify-center md:justify-start gap-4">
+                    <div class="w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-sm text-[#B85032] flex-shrink-0">
+                        <i data-lucide="truck" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-sm text-[#2B2623]">Hızlı & Ücretsiz Kargo</h4>
+                        <p class="text-xs text-[#786C63] mt-0.5">{{ boutique.free_shipping_threshold|floatformat:0 }} TL üzeri alışverişlerde kargo bedava</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-center md:justify-start gap-4">
+                    <div class="w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-sm text-[#B85032] flex-shrink-0">
+                        <i data-lucide="credit-card" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-sm text-[#2B2623]">Vade Farksız 3 Taksit</h4>
+                        <p class="text-xs text-[#786C63] mt-0.5">Tüm bonus, world ve axess kartlara taksit</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-center md:justify-start gap-4">
+                    <div class="w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-sm text-[#B85032] flex-shrink-0">
+                        <i data-lucide="shield-check" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-sm text-[#2B2623]">256-Bit SSL Güvenli Ödeme</h4>
+                        <p class="text-xs text-[#786C63] mt-0.5">PayTR ve 3D Secure onaylı koruma</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-center md:justify-start gap-4">
+                    <div class="w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-sm text-[#B85032] flex-shrink-0">
+                        <i data-lucide="rotate-ccw" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-sm text-[#2B2623]">Kolay İade & Değişim</h4>
+                        <p class="text-xs text-[#786C63] mt-0.5">14 gün içinde sorunsuz iade hakkı</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-[#2B2623] text-[#FAF7F2] pt-14 pb-8 border-t border-[#3E3834]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-12 border-b border-[#3E3834]">
+                
+                <!-- Col 1: About & Info -->
+                <div class="lg:col-span-2 space-y-4">
+                    <span class="font-serif text-3xl font-bold tracking-wider text-white">
+                        GALA <span class="font-light italic text-[#D48B6F]">Butik</span>
+                    </span>
+                    <p class="text-xs leading-relaxed text-[#D4C9BC] max-w-sm">
+                        {{ boutique.slogan }}. Büyük beden kadın modasında kaliteli kumaşlar, rahat kalıplar ve zamansız şıklığı buluşturuyoruz.
+                    </p>
+                    <div class="pt-2 text-xs text-[#D4C9BC] space-y-2">
+                        <p class="flex items-center gap-2">
+                            <i data-lucide="map-pin" class="w-4 h-4 text-[#D48B6F]"></i>
+                            {{ boutique.address }}
+                        </p>
+                        <p class="flex items-center gap-2">
+                            <i data-lucide="phone" class="w-4 h-4 text-[#D48B6F]"></i>
+                            {{ boutique.phone }}
+                        </p>
+                        <p class="flex items-center gap-2">
+                            <i data-lucide="mail" class="w-4 h-4 text-[#D48B6F]"></i>
+                            {{ boutique.email }}
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Col 2: Popüler Kategoriler -->
+                <div>
+                    <h5 class="text-sm font-bold uppercase tracking-wider text-white mb-4 border-b border-[#4A423C] pb-2">
+                        Kategoriler
+                    </h5>
+                    <ul class="space-y-2 text-xs text-[#D4C9BC]">
+                        <li><a href="{% url 'store:product_list' %}" class="hover:text-white transition-colors">Tüm Ürünler</a></li>
+                        {% for cat in nav_categories|slice:":5" %}
+                        <li><a href="{{ cat.get_absolute_url }}" class="hover:text-white transition-colors">{{ cat.name }}</a></li>
+                        {% endfor %}
+                        <li><a href="{% url 'store:product_list' %}?sort=bestseller" class="hover:text-white transition-colors">Çok Satanlar</a></li>
+                    </ul>
+                </div>
+
+                <!-- Col 3: Müşteri Hizmetleri -->
+                <div>
+                    <h5 class="text-sm font-bold uppercase tracking-wider text-white mb-4 border-b border-[#4A423C] pb-2">
+                        Müşteri Rehberi
+                    </h5>
+                    <ul class="space-y-2 text-xs text-[#D4C9BC]">
+                        <li><a href="{% url 'store:about' %}" class="hover:text-white transition-colors">Hakkımızda</a></li>
+                        <li><a href="{% url 'store:size_guide' %}" class="hover:text-white transition-colors">Büyük Beden Tablosu</a></li>
+                        <li><a href="{% url 'store:shipping_returns' %}" class="hover:text-white transition-colors">Kargo ve İade Koşulları</a></li>
+                        <li><a href="{% url 'store:contact' %}" class="hover:text-white transition-colors">İletişim & Mağaza</a></li>
+                        <li><a href="{% url 'store:cart_detail' %}" class="hover:text-white transition-colors">Sepetim</a></li>
+                    </ul>
+                </div>
+
+                <!-- Col 4: Newsletter -->
+                <div>
+                    <h5 class="text-sm font-bold uppercase tracking-wider text-white mb-4 border-b border-[#4A423C] pb-2">
+                        Bültene Katılın
+                    </h5>
+                    <p class="text-xs text-[#D4C9BC] mb-3">
+                        Yeni sezon indirimleri ve özel büyük beden fırsatlarından ilk siz haberdar olun.
+                    </p>
+                    <form onsubmit="event.preventDefault(); showToast('Bültenimize kaydoldunuz. Teşekkürler!', 'success');" class="space-y-2">
+                        <input type="email" placeholder="E-posta adresiniz" required 
+                               class="w-full bg-[#3A332E] border border-[#524942] rounded px-3 py-2 text-xs text-white placeholder-gray-400 focus:outline-none focus:border-[#D48B6F]">
+                        <button type="submit" class="w-full bg-[#B85032] hover:bg-[#9E3F24] text-white text-xs font-bold py-2 rounded transition-colors shadow">
+                            Abone Ol
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+
+            <!-- Bottom Copyright & Badges -->
+            <div class="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#9E938B]">
+                <div>
+                    &copy; {% now "Y" %} {{ boutique.name }}. Tüm Hakları Saklıdır.
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="bg-[#3A332E] px-2.5 py-1 rounded text-[10px] font-bold text-[#D4C9BC]">3D Secure</span>
+                    <span class="bg-[#3A332E] px-2.5 py-1 rounded text-[10px] font-bold text-[#D4C9BC]">256-Bit SSL</span>
+                    <span class="bg-[#3A332E] px-2.5 py-1 rounded text-[10px] font-bold text-[#D4C9BC]">PayTR & İyzico</span>
+                    <span class="bg-[#3A332E] px-2.5 py-1 rounded text-[10px] font-bold text-[#D4C9BC]">Maks. 3 Taksit</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Offcanvas Cart Drawer (Sliding from Right) -->
+    <div id="cart-backdrop" class="fixed inset-0 bg-black/60 z-50 hidden transition-opacity"></div>
+    <div id="cart-drawer" class="fixed inset-y-0 right-0 max-w-md w-full bg-white z-50 shadow-2xl flex flex-col transform translate-x-full transition-transform duration-300 ease-in-out">
+        <!-- Drawer Header -->
+        <div class="p-5 border-b border-[#EAE3D9] flex items-center justify-between bg-[#FAF7F2]">
+            <div class="flex items-center gap-2">
+                <i data-lucide="shopping-bag" class="w-5 h-5 text-[#B85032]"></i>
+                <h3 class="font-serif text-xl font-bold text-[#2B2623]">Alışveriş Sepetim</h3>
+            </div>
+            <button class="cart-drawer-close text-gray-500 hover:text-[#2B2623] p-1.5 rounded-full hover:bg-gray-100" aria-label="Kapat">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+
+        <!-- Free Shipping Banner inside Drawer -->
+        <div class="p-4 bg-[#FBF0EB] border-b border-[#F3D3C8] text-xs">
+            <p class="free-shipping-msg text-[#2B2623] font-medium mb-1.5">
+                {% if cart.remaining_for_free_shipping > 0 %}
+                Kargonun <strong>ÜCRETSİZ</strong> olması için <span class="text-[#B85032] font-bold">{{ cart.remaining_for_free_shipping|floatformat:2 }} ₺</span> daha ekleyin!
+                {% else %}
+                <span class="text-[#16a34a] font-bold">🎉 Tebrikler! Ücretsiz Kargo Kazandınız!</span>
+                {% endif %}
+            </p>
+            <div class="shipping-progress-track">
+                <div class="shipping-progress-bar" style="width: {{ cart.free_shipping_progress }}%;"></div>
+            </div>
+        </div>
+
+        <!-- Drawer Items Scrollable List -->
+        <div class="flex-1 overflow-y-auto p-5 space-y-4">
+            {% if cart and cart.items.all %}
+                {% for item in cart.items.all %}
+                <div class="flex gap-3 pb-4 border-b border-[#EAE3D9] items-start">
+                    <div class="w-16 h-20 rounded bg-gray-100 overflow-hidden flex-shrink-0 border border-gray-200">
+                        <img src="{{ item.product.primary_image.url|default:'/static/images/placeholder.jpg' }}" alt="{{ item.product.name }}" class="w-full h-full object-cover">
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h4 class="text-xs font-bold text-[#2B2623] truncate">{{ item.product.name }}</h4>
+                        <p class="text-[11px] text-[#786C63] mt-0.5">
+                            Beden: <span class="font-semibold text-[#B85032]">{{ item.size_variant.get_size_display|default:"Standart" }}</span>
+                        </p>
+                        <div class="flex items-center justify-between mt-2">
+                            <span class="text-xs font-extrabold text-[#2B2623]">{{ item.total_price|floatformat:2 }} ₺</span>
+                            <form action="{% url 'store:remove_from_cart' item.id %}" method="POST" onsubmit="event.preventDefault(); fetch(this.action, {method: 'POST', headers: {'X-Requested-With': 'XMLHttpRequest', 'X-CSRFToken': '{{ csrf_token }}'}}).then(r=>r.json()).then(d=>{if(d.success){updateCartUI(d); location.reload();}});">
+                                {% csrf_token %}
+                                <button type="submit" class="text-[11px] text-red-500 hover:text-red-700 underline font-medium">Kaldır</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="text-center py-16">
+                    <div class="w-16 h-16 bg-[#FAF7F2] rounded-full flex items-center justify-center mx-auto mb-3 text-[#B85032]">
+                        <i data-lucide="shopping-bag" class="w-8 h-8"></i>
+                    </div>
+                    <p class="text-sm font-semibold text-[#2B2623]">Sepetiniz henüz boş.</p>
+                    <p class="text-xs text-[#786C63] mt-1">Büyük beden yeni sezon ürünlerimizi hemen keşfedin.</p>
+                    <a href="{% url 'store:product_list' %}" class="btn-boutique text-xs mt-4">Alışverişe Başla</a>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Drawer Footer -->
+        {% if cart and cart.items.all %}
+        <div class="p-5 border-t border-[#EAE3D9] bg-[#FAF7F2] space-y-3">
+            <div class="flex justify-between text-xs text-[#786C63]">
+                <span>Ara Toplam:</span>
+                <span class="cart-subtotal-val font-semibold text-[#2B2623]">{{ cart.subtotal|floatformat:2 }} ₺</span>
+            </div>
+            <div class="flex justify-between text-xs text-[#786C63]">
+                <span>Kargo:</span>
+                <span>
+                    {% if cart.shipping_fee == 0 %}
+                    <strong class="text-green-600">ÜCRETSİZ</strong>
+                    {% else %}
+                    {{ cart.shipping_fee|floatformat:2 }} ₺
+                    {% endif %}
+                </span>
+            </div>
+            <div class="flex justify-between text-sm font-bold text-[#2B2623] pt-2 border-t border-[#EAE3D9]">
+                <span>Toplam Tutar:</span>
+                <span class="text-base font-extrabold text-[#B85032]">{{ cart.total_amount|floatformat:2 }} ₺</span>
+            </div>
+            <div class="grid grid-cols-2 gap-2 pt-2">
+                <a href="{% url 'store:cart_detail' %}" class="btn-boutique-outline text-xs text-center py-2.5">
+                    Sepete Git
+                </a>
+                <a href="{% url 'store:checkout' %}" class="btn-boutique text-xs text-center py-2.5">
+                    Ödemeye Geç
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Mobile Navigation Drawer -->
+    <div id="mobile-nav-backdrop" class="fixed inset-0 bg-black/60 z-50 hidden"></div>
+    <div id="mobile-nav-drawer" class="fixed inset-y-0 left-0 max-w-xs w-full bg-white z-50 shadow-2xl flex flex-col transform -translate-x-full transition-transform duration-300 ease-in-out">
+        <div class="p-4 border-b border-[#EAE3D9] flex items-center justify-between bg-[#FAF7F2]">
+            <span class="font-serif text-2xl font-bold text-[#2B2623]">GALA <span class="text-[#B85032] italic">Butik</span></span>
+            <button id="mobile-menu-close" class="text-gray-500 p-1.5" aria-label="Menüyü Kapat">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+        <div class="flex-1 overflow-y-auto p-4 space-y-3 text-sm">
+            <a href="{% url 'store:home' %}" class="block py-2 font-bold text-charcoal-900 border-b border-gray-100">Anasayfa</a>
+            <a href="{% url 'store:product_list' %}" class="block py-2 font-bold text-charcoal-900 border-b border-gray-100">Tüm Koleksiyon</a>
+            
+            <div class="py-2">
+                <p class="text-xs uppercase font-bold text-[#B85032] tracking-wider mb-2">Kategoriler</p>
+                {% for cat in nav_categories %}
+                <div class="py-1">
+                    <a href="{{ cat.get_absolute_url }}" class="block font-semibold text-[#2B2623] py-1">{{ cat.name }}</a>
+                    {% if cat.children.all %}
+                    <div class="pl-3 space-y-1 mt-1 border-l-2 border-[#EAE3D9]">
+                        {% for child in cat.children.all %}
+                        <a href="{{ child.get_absolute_url }}" class="block text-xs text-[#786C63] py-1 hover:text-[#B85032]">{{ child.name }}</a>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="pt-4 border-t border-gray-100 space-y-2 text-xs">
+                <a href="{% url 'store:size_guide' %}" class="block text-[#786C63] py-1">Büyük Beden Ölçü Tablosu</a>
+                <a href="{% url 'store:shipping_returns' %}" class="block text-[#786C63] py-1">Kargo ve İade</a>
+                <a href="{% url 'store:about' %}" class="block text-[#786C63] py-1">Hakkımızda</a>
+                <a href="{% url 'store:contact' %}" class="block text-[#786C63] py-1">İletişim</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Search Modal -->
+    <div id="search-modal" class="fixed inset-0 bg-black/70 z-50 hidden flex items-start justify-center p-4 pt-20">
+        <div class="bg-white rounded-xl max-w-lg w-full p-4 shadow-2xl animate-fade-in relative">
+            <button class="search-modal-close absolute top-4 right-4 text-gray-400 hover:text-black">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <h4 class="font-serif text-lg font-bold text-[#2B2623] mb-3">Ürün Arama</h4>
+            <form action="{% url 'store:product_list' %}" method="GET">
+                <div class="relative">
+                    <input id="search-modal-input" type="text" name="q" placeholder="Elbise, tunik, büyük beden triko ara..." class="w-full border border-[#EAE3D9] rounded-lg py-3 pl-4 pr-12 text-sm focus:outline-none focus:border-[#B85032]">
+                    <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 bg-[#B85032] text-white p-2 rounded-md">
+                        <i data-lucide="search" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Initialize Lucide Icons -->
+    <script>
+        lucide.createIcons();
+    </script>
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

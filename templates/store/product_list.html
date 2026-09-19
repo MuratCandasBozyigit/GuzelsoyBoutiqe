@@ -1,0 +1,291 @@
+{% extends 'base.html' %}
+{% load static humanize %}
+
+{% block title %}
+    {% if current_category %}{{ current_category.name }} - {% endif %}Koleksiyon | {{ boutique.name }}
+{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    
+    <!-- Breadcrumb Navigation -->
+    <nav class="flex items-center gap-2 text-xs text-[#786C63] mb-6">
+        <a href="{% url 'store:home' %}" class="hover:text-[#B85032]">Anasayfa</a>
+        <span>/</span>
+        {% if current_category %}
+            {% if current_category.parent %}
+                <a href="{{ current_category.parent.get_absolute_url }}" class="hover:text-[#B85032]">{{ current_category.parent.name }}</a>
+                <span>/</span>
+            {% endif %}
+            <span class="text-[#2B2623] font-bold">{{ current_category.name }}</span>
+        {% else %}
+            <span class="text-[#2B2623] font-bold">Tüm Koleksiyon</span>
+        {% endif %}
+    </nav>
+
+    <!-- Header & Category Title -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between border-b border-[#EAE3D9] pb-6 mb-8 gap-4">
+        <div>
+            <h1 class="font-serif text-3xl sm:text-4xl font-bold text-[#2B2623]">
+                {% if current_category %}
+                    {{ current_category.name }}
+                {% elif query %}
+                    "{{ query }}" için Arama Sonuçları
+                {% else %}
+                    Tüm Büyük Beden Koleksiyonu
+                {% endif %}
+            </h1>
+            <p class="text-xs text-[#786C63] mt-1.5">
+                {% if current_category and current_category.description %}
+                    {{ current_category.description }}
+                {% else %}
+                    Toplam <strong>{{ total_products }}</strong> seçkin ürün listeleniyor
+                {% endif %}
+            </p>
+        </div>
+
+        <!-- Sorting Selector -->
+        <div class="flex items-center gap-3">
+            <label for="sort-select" class="text-xs font-semibold text-[#786C63] whitespace-nowrap">Sırala:</label>
+            <form method="GET" id="sort-form" class="inline">
+                {% if current_category %}
+                    <!-- Keep category in action URL -->
+                {% endif %}
+                {% for size in selected_sizes %}
+                    <input type="hidden" name="size" value="{{ size }}">
+                {% endfor %}
+                {% if query %}<input type="hidden" name="q" value="{{ query }}">{% endif %}
+                {% if min_price %}<input type="hidden" name="min_price" value="{{ min_price }}">{% endif %}
+                {% if max_price %}<input type="hidden" name="max_price" value="{{ max_price }}">{% endif %}
+                {% if in_stock_only %}<input type="hidden" name="in_stock" value="1">{% endif %}
+                {% if on_sale_only %}<input type="hidden" name="on_sale" value="1">{% endif %}
+
+                <select id="sort-select" name="sort" onchange="this.form.submit()" class="bg-white border border-[#EAE3D9] rounded-lg px-3 py-2 text-xs text-[#2B2623] focus:outline-none focus:border-[#B85032] shadow-sm font-medium">
+                    <option value="newest" {% if sort_by == 'newest' %}selected{% endif %}>En Yeni Eklenenler</option>
+                    <option value="price_asc" {% if sort_by == 'price_asc' %}selected{% endif %}>Fiyat: Düşükten Yükseğe</option>
+                    <option value="price_desc" {% if sort_by == 'price_desc' %}selected{% endif %}>Fiyat: Yüksekten Düşüğe</option>
+                    <option value="bestseller" {% if sort_by == 'bestseller' %}selected{% endif %}>Çok Satanlar</option>
+                    <option value="name_asc" {% if sort_by == 'name_asc' %}selected{% endif %}>Ürün Adı (A-Z)</option>
+                </select>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Layout: Filter Sidebar + Products Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        
+        <!-- Left Filter Sidebar -->
+        <aside class="lg:col-span-1 space-y-6">
+            <div class="bg-white p-6 rounded-xl border border-[#EAE3D9] shadow-sm">
+                
+                <div class="flex items-center justify-between pb-4 border-b border-[#EAE3D9]">
+                    <h3 class="font-serif text-lg font-bold text-[#2B2623] flex items-center gap-2">
+                        <i data-lucide="sliders-horizontal" class="w-4 h-4 text-[#B85032]"></i>
+                        Filtreler
+                    </h3>
+                    {% if selected_sizes or min_price or max_price or in_stock_only or on_sale_only %}
+                    <a href="{% if current_category %}{{ current_category.get_absolute_url }}{% else %}{% url 'store:product_list' %}{% endif %}" class="text-[11px] text-[#B85032] font-semibold hover:underline">
+                        Temizle
+                    </a>
+                    {% endif %}
+                </div>
+
+                <form method="GET" action="{% if current_category %}{{ current_category.get_absolute_url }}{% else %}{% url 'store:product_list' %}{% endif %}" class="space-y-6 pt-4">
+                    {% if query %}
+                    <input type="hidden" name="q" value="{{ query }}">
+                    {% endif %}
+                    <input type="hidden" name="sort" value="{{ sort_by }}">
+
+                    <!-- Categories Filter -->
+                    <div>
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-[#2B2623] mb-3">Kategoriler</h4>
+                        <ul class="space-y-2 text-xs">
+                            <li>
+                                <a href="{% url 'store:product_list' %}" class="{% if not current_category %}font-bold text-[#B85032]{% else %}text-[#786C63] hover:text-[#2B2623]{% endif %} flex items-center justify-between">
+                                    <span>Tüm Ürünler</span>
+                                </a>
+                            </li>
+                            {% for cat in all_categories %}
+                            <li>
+                                <a href="{{ cat.get_absolute_url }}" class="{% if current_category.id == cat.id %}font-bold text-[#B85032]{% else %}text-[#786C63] hover:text-[#2B2623]{% endif %} flex items-center justify-between">
+                                    <span>{{ cat.name }}</span>
+                                    <span class="text-[10px] text-gray-400">({{ cat.product_count }})</span>
+                                </a>
+                                {% if cat.children.all %}
+                                <ul class="pl-3 mt-1 space-y-1 border-l border-[#EAE3D9]">
+                                    {% for child in cat.children.all %}
+                                    <li>
+                                        <a href="{{ child.get_absolute_url }}" class="{% if current_category.id == child.id %}font-bold text-[#B85032]{% else %}text-[#9E938B] hover:text-[#2B2623]{% endif %} text-[11px] block py-0.5">
+                                            {{ child.name }} ({{ child.product_count }})
+                                        </a>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                                {% endif %}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+                    <!-- Size Filter (Büyük Beden Fokuslu) -->
+                    <div class="pt-4 border-t border-[#EAE3D9]">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-[#2B2623] mb-3">Beden Seçimi</h4>
+                        <div class="grid grid-cols-2 gap-2">
+                            {% for size_code, size_label in all_sizes %}
+                            <label class="flex items-center gap-2 text-xs text-[#2B2623] cursor-pointer hover:text-[#B85032]">
+                                <input type="checkbox" name="size" value="{{ size_code }}" 
+                                       {% if size_code in selected_sizes %}checked{% endif %}
+                                       class="rounded text-[#B85032] focus:ring-[#B85032] border-[#D4C9BC]">
+                                <span class="{% if size_code in selected_sizes %}font-bold text-[#B85032]{% endif %}">{{ size_label }}</span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Price Range -->
+                    <div class="pt-4 border-t border-[#EAE3D9]">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-[#2B2623] mb-3">Fiyat Aralığı (TL)</h4>
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="number" name="min_price" value="{{ min_price }}" placeholder="En az" class="w-full bg-[#FAF7F2] border border-[#EAE3D9] rounded px-3 py-1.5 text-xs focus:outline-none focus:border-[#B85032]">
+                            <input type="number" name="max_price" value="{{ max_price }}" placeholder="En çok" class="w-full bg-[#FAF7F2] border border-[#EAE3D9] rounded px-3 py-1.5 text-xs focus:outline-none focus:border-[#B85032]">
+                        </div>
+                    </div>
+
+                    <!-- Checkbox Toggles -->
+                    <div class="pt-4 border-t border-[#EAE3D9] space-y-2">
+                        <label class="flex items-center gap-2 text-xs text-[#2B2623] cursor-pointer">
+                            <input type="checkbox" name="in_stock" value="1" {% if in_stock_only %}checked{% endif %} class="rounded text-[#B85032] focus:ring-[#B85032] border-[#D4C9BC]">
+                            <span>Sadece Stoktaki Ürünler</span>
+                        </label>
+                        <label class="flex items-center gap-2 text-xs text-[#2B2623] cursor-pointer">
+                            <input type="checkbox" name="on_sale" value="1" {% if on_sale_only %}checked{% endif %} class="rounded text-[#B85032] focus:ring-[#B85032] border-[#D4C9BC]">
+                            <span>Sadece İndirimli Ürünler</span>
+                        </label>
+                    </div>
+
+                    <button type="submit" class="w-full btn-boutique text-xs py-2.5 shadow-sm">
+                        Filtreleri Uygula
+                    </button>
+                </form>
+
+            </div>
+        </aside>
+
+        <!-- Right Product Grid -->
+        <main class="lg:col-span-3">
+            
+            {% if page_obj %}
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
+                    {% for product in page_obj %}
+                    <div class="product-card flex flex-col justify-between">
+                        
+                        <div class="product-image-container">
+                            <a href="{{ product.get_absolute_url }}">
+                                <img src="{{ product.primary_image.url|default:'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=600&auto=format&fit=crop' }}" 
+                                     alt="{{ product.name }}" 
+                                     loading="lazy">
+                            </a>
+
+                            <div class="absolute top-2.5 left-2.5 flex flex-col gap-1.5 z-10">
+                                {% if product.has_discount %}
+                                <span class="badge-discount">-%{{ product.discount_percent }}</span>
+                                {% endif %}
+                                {% if product.is_new %}
+                                <span class="badge-new">Yeni</span>
+                                {% endif %}
+                                {% if product.is_bestseller %}
+                                <span class="badge-bestseller">Çok Satan</span>
+                                {% endif %}
+                            </div>
+
+                            <!-- Available Sizes on Image bottom -->
+                            <div class="absolute bottom-0 inset-x-0 bg-white/95 backdrop-blur-sm px-2 py-1 text-[10px] text-[#786C63] text-center border-t border-[#EAE3D9] flex items-center justify-center gap-1 flex-wrap">
+                                {% for variant in product.size_variants.all|slice:":4" %}
+                                <span class="px-1 rounded bg-[#F3EDE2] text-[#2B2623] font-medium">{{ variant.size }}</span>
+                                {% empty %}
+                                <span>Standart</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="p-4 flex flex-col flex-1 justify-between">
+                            <div>
+                                <span class="text-[11px] uppercase font-semibold text-[#B85032]">{{ product.category.name }}</span>
+                                <h3 class="text-xs sm:text-sm font-bold text-[#2B2623] mt-1 line-clamp-2 hover:text-[#B85032]">
+                                    <a href="{{ product.get_absolute_url }}">{{ product.name }}</a>
+                                </h3>
+                            </div>
+
+                            <div class="mt-4 pt-3 border-t border-[#F3EDE2]">
+                                <div class="flex items-baseline gap-2">
+                                    <span class="text-sm sm:text-base font-extrabold text-[#2B2623]">{{ product.current_price|floatformat:2 }} ₺</span>
+                                    {% if product.has_discount %}
+                                    <span class="text-xs text-gray-400 line-through">{{ product.price|floatformat:2 }} ₺</span>
+                                    {% endif %}
+                                </div>
+
+                                <p class="text-[10px] sm:text-[11px] text-[#786C63] mt-0.5">
+                                    3 x <strong class="text-[#B85032]">{{ product.installment_3x|floatformat:2 }} ₺</strong> (Vade Farksız)
+                                </p>
+
+                                <a href="{{ product.get_absolute_url }}" class="block text-center mt-3 bg-[#FAF7F2] hover:bg-[#B85032] text-[#2B2623] hover:text-white border border-[#EAE3D9] hover:border-[#B85032] text-xs font-bold py-2 rounded transition-all">
+                                    Beden Seç & İncele
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Pagination -->
+                {% if page_obj.has_other_pages %}
+                <div class="mt-12 flex items-center justify-center gap-2">
+                    {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% for s in selected_sizes %}&size={{ s }}{% endfor %}&sort={{ sort_by }}" class="px-3.5 py-2 rounded border border-[#EAE3D9] bg-white text-xs font-semibold text-[#2B2623] hover:bg-[#FAF7F2]">
+                        Önceki
+                    </a>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                        <span class="px-3.5 py-2 rounded bg-[#B85032] text-white text-xs font-bold">
+                            {{ num }}
+                        </span>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <a href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}{% for s in selected_sizes %}&size={{ s }}{% endfor %}&sort={{ sort_by }}" class="px-3.5 py-2 rounded border border-[#EAE3D9] bg-white text-xs font-semibold text-[#2B2623] hover:bg-[#FAF7F2]">
+                            {{ num }}
+                        </a>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% for s in selected_sizes %}&size={{ s }}{% endfor %}&sort={{ sort_by }}" class="px-3.5 py-2 rounded border border-[#EAE3D9] bg-white text-xs font-semibold text-[#2B2623] hover:bg-[#FAF7F2]">
+                        Sonraki
+                    </a>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+            {% else %}
+                <!-- No Results State -->
+                <div class="bg-white rounded-xl p-12 text-center border border-[#EAE3D9]">
+                    <div class="w-16 h-16 bg-[#FAF7F2] rounded-full flex items-center justify-center mx-auto mb-4 text-[#B85032]">
+                        <i data-lucide="search-x" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="font-serif text-xl font-bold text-[#2B2623]">Aradığınız kriterlere uygun ürün bulunamadı.</h3>
+                    <p class="text-xs text-[#786C63] mt-2 max-w-sm mx-auto">
+                        Filtreleri temizleyerek veya farklı beden ve kategori seçeneklerini deneyerek koleksiyonumuzu inceleyebilirsiniz.
+                    </p>
+                    <a href="{% url 'store:product_list' %}" class="btn-boutique text-xs mt-6">
+                        Tüm Ürünleri Gör
+                    </a>
+                </div>
+            {% endif %}
+
+        </main>
+
+    </div>
+
+</div>
+{% endblock %}

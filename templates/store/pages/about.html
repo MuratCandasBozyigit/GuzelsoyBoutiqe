@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Hakkımızda | {{ boutique.name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    
+    <div class="bg-white rounded-2xl border border-[#EAE3D9] p-8 sm:p-12 shadow-sm space-y-8">
+        
+        <div class="text-center max-w-2xl mx-auto space-y-3">
+            <span class="text-xs font-bold uppercase tracking-widest text-[#B85032]">Hikayemiz ve Değerlerimiz</span>
+            <h1 class="font-serif text-3xl sm:text-4xl font-bold text-[#2B2623]">
+                Büyük Beden Şıklığında Yeni Bir Soluk: <span class="italic text-[#B85032]">Gala Butik</span>
+            </h1>
+            <div class="w-16 h-0.5 bg-[#B85032] mx-auto mt-2"></div>
+        </div>
+
+        <div class="prose prose-sm max-w-none text-[#786C63] text-sm leading-relaxed space-y-6">
+            <p>
+                <strong>Gala Butik</strong>, kadınların kendi bedenlerinde kendilerini kusursuz, özgür ve zarif hissetmeleri vizyonuyla yola çıktı. Deniz Butik zarafetinden ilham alarak geliştirdiğimiz koleksiyonlarımızda, kalıpların kısıtlayıcı sınırlarını kaldırıyor; 42 bedenden 58 bedene kadar her kadının zarafetini ön plana çıkarıyoruz.
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-8 not-prose">
+                <div class="bg-[#FAF7F2] p-6 rounded-xl border border-[#EAE3D9] space-y-2">
+                    <h3 class="font-serif text-lg font-bold text-[#2B2623] flex items-center gap-2">
+                        <i data-lucide="award" class="w-5 h-5 text-[#B85032]"></i>
+                        Kusursuz Kalıp Anlayışı
+                    </h3>
+                    <p class="text-xs text-[#786C63]">
+                        Her modelimiz, büyük beden kadın anatomisine uygun olarak özel olarak kalıplanır. Vücudu sıkmayan, toparlayıcı ve dökümlü hatlar önceliğimizdir.
+                    </p>
+                </div>
+
+                <div class="bg-[#FAF7F2] p-6 rounded-xl border border-[#EAE3D9] space-y-2">
+                    <h3 class="font-serif text-lg font-bold text-[#2B2623] flex items-center gap-2">
+                        <i data-lucide="feather" class="w-5 h-5 text-[#B85032]"></i>
+                        Doğal & Nefes Alan Kumaşlar
+                    </h3>
+                    <p class="text-xs text-[#786C63]">
+                        Viskon, pamuk, tencel ve elastan karışımlı yüksek kaliteli yerli kumaşlar kullanarak gün boyu hafiflik ve terletmeyen konfor sunuyoruz.
+                    </p>
+                </div>
+            </div>
+
+            <p>
+                Gala Butik olarak müşteri memnuniyetini en üst seviyede tutuyor; hızlı kargo, şeffaf iade ve değişim süreçleri ile güvenli alışveriş standartlarını titizlikle uyguluyoruz.
+            </p>
+        </div>
+
+        <div class="pt-6 border-t border-[#EAE3D9] text-center">
+            <a href="{% url 'store:product_list' %}" class="btn-boutique text-xs px-8 py-3.5">
+                Koleksiyonumuzu Keşfedin
+            </a>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

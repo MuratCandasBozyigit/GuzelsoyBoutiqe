@@ -1,0 +1,187 @@
+{% extends 'base.html' %}
+{% load static humanize %}
+
+{% block title %}Alışveriş Sepetim | {{ boutique.name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    
+    <nav class="flex items-center gap-2 text-xs text-[#786C63] mb-6">
+        <a href="{% url 'store:home' %}" class="hover:text-[#B85032]">Anasayfa</a>
+        <span>/</span>
+        <span class="text-[#2B2623] font-bold">Alışveriş Sepetim</span>
+    </nav>
+
+    <h1 class="font-serif text-3xl sm:text-4xl font-bold text-[#2B2623] mb-8">
+        Alışveriş Sepetim <span class="text-sm font-sans font-normal text-[#786C63]">({{ cart.total_items }} Ürün)</span>
+    </h1>
+
+    {% if cart_items %}
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Left: Cart Items List -->
+        <div class="lg:col-span-8 space-y-4">
+            
+            <!-- Free Shipping Notification Box -->
+            <div class="bg-[#FBF0EB] border border-[#F3D3C8] rounded-xl p-4">
+                <div class="flex items-center justify-between text-xs text-[#2B2623] font-semibold mb-2">
+                    <span class="flex items-center gap-1.5">
+                        <i data-lucide="truck" class="w-4 h-4 text-[#B85032]"></i>
+                        {% if cart.remaining_for_free_shipping > 0 %}
+                        Kargonun <strong class="text-[#B85032]">ÜCRETSİZ</strong> olması için sepetinize <strong class="text-[#B85032]">{{ cart.remaining_for_free_shipping|floatformat:2 }} ₺</strong> daha ürün ekleyin!
+                        {% else %}
+                        <span class="text-green-700">🎉 Tebrikler! Siparişinizde Kargo ÜCRETSİZ!</span>
+                        {% endif %}
+                    </span>
+                    <span class="text-[#786C63]">{{ cart.free_shipping_progress }}%</span>
+                </div>
+                <div class="shipping-progress-track">
+                    <div class="shipping-progress-bar" style="width: {{ cart.free_shipping_progress }}%;"></div>
+                </div>
+            </div>
+
+            <!-- Items Container -->
+            <div class="bg-white rounded-xl border border-[#EAE3D9] divide-y divide-[#EAE3D9] shadow-sm overflow-hidden">
+                {% for item in cart_items %}
+                <div class="p-4 sm:p-6 flex flex-col sm:flex-row items-center sm:items-start gap-4 justify-between">
+                    
+                    <!-- Thumbnail & Info -->
+                    <div class="flex items-center gap-4 flex-1">
+                        <a href="{{ item.product.get_absolute_url }}" class="w-20 h-24 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0 border border-[#EAE3D9]">
+                            <img src="{{ item.product.primary_image.url|default:'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=300&auto=format&fit=crop' }}" alt="{{ item.product.name }}" class="w-full h-full object-cover">
+                        </a>
+                        <div class="space-y-1">
+                            <span class="text-[10px] uppercase font-bold text-[#B85032] tracking-wider">{{ item.product.category.name }}</span>
+                            <h3 class="text-sm font-bold text-[#2B2623] hover:text-[#B85032]">
+                                <a href="{{ item.product.get_absolute_url }}">{{ item.product.name }}</a>
+                            </h3>
+                            <p class="text-xs text-[#786C63]">
+                                Seçilen Beden: <strong class="text-[#2B2623]">{{ item.size_variant.get_size_display|default:"Standart" }}</strong>
+                            </p>
+                            <p class="text-xs text-[#786C63]">
+                                Birim Fiyat: <strong class="text-[#2B2623]">{{ item.unit_price|floatformat:2 }} ₺</strong>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Quantity Stepper & Price -->
+                    <div class="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto pt-3 sm:pt-0 border-t sm:border-t-0 border-gray-100">
+                        
+                        <!-- Quantity Form -->
+                        <form action="{% url 'store:update_cart' %}" method="POST" class="flex items-center">
+                            {% csrf_token %}
+                            <input type="hidden" name="item_id" value="{{ item.id }}">
+                            <div class="quantity-stepper flex items-center border border-[#EAE3D9] rounded-lg bg-[#FAF7F2] p-0.5">
+                                <button type="button" class="btn-qty-minus w-7 h-7 rounded bg-white hover:bg-gray-100 flex items-center justify-center text-xs font-bold text-[#2B2623] shadow-sm">-</button>
+                                <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="10" onchange="this.form.submit()" class="w-10 text-center bg-transparent text-xs font-bold text-[#2B2623] focus:outline-none">
+                                <button type="button" class="btn-qty-plus w-7 h-7 rounded bg-white hover:bg-gray-100 flex items-center justify-center text-xs font-bold text-[#2B2623] shadow-sm">+</button>
+                            </div>
+                        </form>
+
+                        <!-- Total Price -->
+                        <div class="text-right min-w-[90px]">
+                            <span class="text-base font-extrabold text-[#2B2623] block">{{ item.total_price|floatformat:2 }} ₺</span>
+                        </div>
+
+                        <!-- Remove Button -->
+                        <form action="{% url 'store:remove_from_cart' item.id %}" method="POST">
+                            {% csrf_token %}
+                            <button type="submit" class="p-2 text-gray-400 hover:text-red-600 transition-colors" title="Sepetten Sil">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </form>
+
+                    </div>
+
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="flex justify-between items-center pt-2">
+                <a href="{% url 'store:product_list' %}" class="text-xs font-bold text-[#B85032] hover:underline flex items-center gap-1">
+                    <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+                    <span>Alışverişe Devam Et</span>
+                </a>
+            </div>
+
+        </div>
+
+        <!-- Right: Order Summary -->
+        <div class="lg:col-span-4 bg-white rounded-xl border border-[#EAE3D9] p-6 shadow-sm space-y-6">
+            
+            <h2 class="font-serif text-xl font-bold text-[#2B2623] pb-3 border-b border-[#EAE3D9]">
+                Sipariş Özeti
+            </h2>
+
+            <div class="space-y-3 text-xs text-[#786C63]">
+                <div class="flex justify-between">
+                    <span>Ürünler Ara Toplamı:</span>
+                    <span class="font-bold text-[#2B2623]">{{ cart.subtotal|floatformat:2 }} ₺</span>
+                </div>
+                
+                <div class="flex justify-between">
+                    <span>Kargo Ücreti:</span>
+                    <span>
+                        {% if cart.shipping_fee == 0 %}
+                        <strong class="text-green-600">ÜCRETSİZ</strong>
+                        {% else %}
+                        <strong class="text-[#2B2623]">{{ cart.shipping_fee|floatformat:2 }} ₺</strong>
+                        {% endif %}
+                    </span>
+                </div>
+
+                <div class="pt-3 border-t border-[#EAE3D9] flex justify-between items-baseline text-base font-bold text-[#2B2623]">
+                    <span>Ödenecek Tutar:</span>
+                    <span class="text-xl font-extrabold text-[#B85032]">{{ cart.total_amount|floatformat:2 }} ₺</span>
+                </div>
+            </div>
+
+            <!-- Installment Notice Box -->
+            <div class="bg-[#FAF7F2] p-3 rounded-lg border border-[#EAE3D9] text-[11px] text-[#786C63] space-y-1">
+                <p class="font-semibold text-[#2B2623] flex items-center gap-1">
+                    <i data-lucide="credit-card" class="w-3.5 h-3.5 text-[#B85032]"></i>
+                    Tüm Kredi Kartlarına Vade Farksız 3 Taksit
+                </p>
+                <p>Ödeme aşamasında taksit seçiminizi yapabilirsiniz.</p>
+            </div>
+
+            <a href="{% url 'store:checkout' %}" class="w-full btn-boutique py-3.5 text-sm font-bold shadow-md text-center">
+                <span>Alışverişi Tamamla</span>
+                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </a>
+
+            <!-- Secure Badges -->
+            <div class="pt-4 border-t border-[#EAE3D9] text-center space-y-2">
+                <p class="text-[10px] text-[#9E938B] uppercase font-bold tracking-wider">Güvenli Ödeme Garantisi</p>
+                <div class="flex justify-center gap-2 text-[10px] text-[#786C63]">
+                    <span>🔒 256-Bit SSL</span>
+                    <span>•</span>
+                    <span>🛡️ 3D Secure</span>
+                    <span>•</span>
+                    <span>💳 PayTR / İyzico</span>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    {% else %}
+    
+    <!-- Empty Cart -->
+    <div class="bg-white rounded-2xl border border-[#EAE3D9] p-12 text-center max-w-lg mx-auto shadow-sm">
+        <div class="w-20 h-20 bg-[#FAF7F2] rounded-full flex items-center justify-center mx-auto mb-4 text-[#B85032]">
+            <i data-lucide="shopping-bag" class="w-10 h-10"></i>
+        </div>
+        <h2 class="font-serif text-2xl font-bold text-[#2B2623]">Sepetinizde Ürün Bulunmuyor</h2>
+        <p class="text-xs text-[#786C63] mt-2">
+            Gala Butik'in şık ve rahat büyük beden kreasyonlarını inceleyerek hemen alışverişe başlayabilirsiniz.
+        </p>
+        <a href="{% url 'store:product_list' %}" class="btn-boutique text-xs mt-6 px-8 py-3">
+            Koleksiyonu İncele
+        </a>
+    </div>
+
+    {% endif %}
+
+</div>
+{% endblock %}

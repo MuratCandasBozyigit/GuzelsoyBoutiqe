@@ -1,0 +1,417 @@
+{% extends 'base.html' %}
+{% load static humanize %}
+
+{% block title %}{{ product.name }} | {{ boutique.name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    
+    <!-- Breadcrumb -->
+    <nav class="flex items-center gap-2 text-xs text-[#786C63] mb-6">
+        <a href="{% url 'store:home' %}" class="hover:text-[#B85032]">Anasayfa</a>
+        <span>/</span>
+        <a href="{{ product.category.get_absolute_url }}" class="hover:text-[#B85032]">{{ product.category.name }}</a>
+        <span>/</span>
+        <span class="text-[#2B2623] font-bold truncate max-w-xs">{{ product.name }}</span>
+    </nav>
+
+    <!-- Main 2-Column Product Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 bg-white p-6 sm:p-8 rounded-2xl border border-[#EAE3D9] shadow-sm">
+        
+        <!-- Left Column: Gallery -->
+        <div class="lg:col-span-6 flex flex-col-reverse sm:flex-row gap-4">
+            
+            <!-- Thumbnail List -->
+            <div class="flex sm:flex-col gap-3 overflow-x-auto sm:overflow-y-auto max-h-[550px] scrollbar-thin flex-shrink-0">
+                {% for img in product.images.all %}
+                <button type="button" 
+                        class="gallery-thumb w-16 h-20 sm:w-20 sm:h-24 rounded-lg overflow-hidden border-2 {% if forloop.first %}border-[#B85032] opacity-100{% else %}border-transparent opacity-60{% endif %} hover:opacity-100 transition-all flex-shrink-0 bg-[#FAF7F2]"
+                        data-full-src="{{ img.url }}">
+                    <img src="{{ img.url }}" alt="{{ product.name }}" class="w-full h-full object-cover">
+                </button>
+                {% empty %}
+                <button type="button" class="gallery-thumb w-20 h-24 rounded-lg overflow-hidden border-2 border-[#B85032]">
+                    <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover">
+                </button>
+                {% endfor %}
+            </div>
+
+            <!-- Big Main Image View -->
+            <div class="flex-1 aspect-[3/4] rounded-xl overflow-hidden bg-[#FAF7F2] border border-[#EAE3D9] relative group">
+                <img id="main-product-image" 
+                     src="{{ product.primary_image.url|default:'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=800&auto=format&fit=crop' }}" 
+                     alt="{{ product.name }}" 
+                     class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+
+                <div class="absolute top-4 left-4 flex flex-col gap-2 pointer-events-none">
+                    {% if product.has_discount %}
+                    <span class="badge-discount text-xs">-%{{ product.discount_percent }} İndirim</span>
+                    {% endif %}
+                    {% if product.is_new %}
+                    <span class="badge-new text-xs">Yeni Sezon</span>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Right Column: Product Purchasing Details -->
+        <div class="lg:col-span-6 flex flex-col justify-between space-y-6">
+            
+            <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs uppercase font-bold tracking-wider text-[#B85032]">{{ product.category.name }}</span>
+                    <span class="text-xs text-[#786C63]">Ürün Kodu: <strong class="text-[#2B2623]">{{ product.sku }}</strong></span>
+                </div>
+
+                <h1 class="font-serif text-2xl sm:text-3xl font-bold text-[#2B2623] leading-snug">
+                    {{ product.name }}
+                </h1>
+
+                <!-- Rating and Stock Badge -->
+                <div class="flex items-center gap-4 text-xs pb-3 border-b border-[#EAE3D9]">
+                    <div class="flex items-center text-amber-500 font-semibold gap-1">
+                        <span>★★★★★</span>
+                        <span class="text-[#786C63] ml-1">(4.9 / 48 Değerlendirme)</span>
+                    </div>
+                    <span>•</span>
+                    <div id="size-stock-feedback">
+                        {% if product.is_in_stock %}
+                        <span class="text-green-600 font-bold flex items-center gap-1">
+                            <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
+                            Stokta Mevcut
+                        </span>
+                        {% else %}
+                        <span class="text-red-600 font-bold">Tükendi</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Price Box -->
+                <div class="bg-[#FAF7F2] p-4 rounded-xl border border-[#EAE3D9] flex items-center justify-between">
+                    <div>
+                        <div class="flex items-baseline gap-3">
+                            <span class="text-3xl font-extrabold text-[#2B2623]">{{ product.current_price|floatformat:2 }} ₺</span>
+                            {% if product.has_discount %}
+                            <span class="text-sm text-gray-400 line-through">{{ product.price|floatformat:2 }} ₺</span>
+                            <span class="text-xs font-bold text-[#B85032] bg-[#FBF0EB] px-2 py-0.5 rounded">Kazancınız: {{ product.price|add:product.discount_price|floatformat:2 }} ₺</span>
+                            {% endif %}
+                        </div>
+                        <p class="text-xs text-[#786C63] mt-1">KDV Dahildir</p>
+                    </div>
+
+                    <!-- 3 Installments Mini Badge -->
+                    <div class="text-right border-l border-[#EAE3D9] pl-4">
+                        <span class="text-[11px] font-bold text-[#B85032] uppercase tracking-wider block">Maks. 3 Taksit</span>
+                        <span class="text-xs font-extrabold text-[#2B2623]">3 x {{ product.installment_3x|floatformat:2 }} ₺</span>
+                        <span class="text-[10px] text-green-700 block">Vade Farksız</span>
+                    </div>
+                </div>
+
+                <!-- Free Shipping Progress Hook -->
+                <div class="flex items-center gap-2 text-xs text-[#2B2623] bg-[#FBF0EB] px-3.5 py-2.5 rounded-lg border border-[#F3D3C8]">
+                    <i data-lucide="truck" class="w-4 h-4 text-[#B85032] flex-shrink-0"></i>
+                    <span><strong>{{ boutique.free_shipping_threshold|floatformat:0 }} TL</strong> ve üzeri tüm siparişlerinizde kargo <strong>ÜCRETSİZ!</strong></span>
+                </div>
+
+                <!-- Size Variant Selector & Form -->
+                <form action="{% url 'store:add_to_cart' %}" method="POST" class="ajax-add-to-cart space-y-6 pt-2">
+                    {% csrf_token %}
+                    <input type="hidden" name="product_id" value="{{ product.id }}">
+                    <input type="hidden" name="size_variant_id" id="selected-size-variant-id" value="{% if variants %}{{ variants.first.id }}{% endif %}">
+
+                    <!-- Size Pills -->
+                    <div class="size-options-container">
+                        <div class="flex items-center justify-between mb-2">
+                            <label class="text-xs font-bold uppercase tracking-wider text-[#2B2623] flex items-center gap-1.5">
+                                <span>Beden Seçiniz:</span>
+                                <span class="text-[#B85032] text-[11px] font-normal">(Büyük Beden / Standart)</span>
+                            </label>
+                            
+                            <!-- Size Guide Modal Trigger -->
+                            <button type="button" onclick="document.getElementById('size-modal').classList.remove('hidden')" class="text-xs text-[#B85032] hover:underline font-semibold flex items-center gap-1">
+                                <i data-lucide="ruler" class="w-3.5 h-3.5"></i>
+                                <span>Beden Tablosu</span>
+                            </button>
+                        </div>
+
+                        <div class="flex flex-wrap gap-2.5">
+                            {% for variant in variants %}
+                            <button type="button" 
+                                    class="size-select-pill size-pill {% if forloop.first %}active{% endif %} {% if not variant.is_in_stock %}disabled{% endif %}"
+                                    data-variant-id="{{ variant.id }}"
+                                    data-stock="{{ variant.stock }}"
+                                    {% if not variant.is_in_stock %}disabled{% endif %}>
+                                {{ variant.get_size_display }}
+                            </button>
+                            {% empty %}
+                            <span class="text-xs text-[#786C63]">Standart Beden</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Quantity & Action Buttons -->
+                    <div class="flex items-center gap-4 pt-2">
+                        
+                        <!-- Quantity Stepper -->
+                        <div class="quantity-stepper flex items-center border border-[#EAE3D9] rounded-lg bg-[#FAF7F2] p-1">
+                            <button type="button" class="btn-qty-minus w-8 h-8 rounded bg-white hover:bg-gray-100 flex items-center justify-center text-[#2B2623] font-bold shadow-sm" aria-label="Azalt">-</button>
+                            <input type="number" name="quantity" value="1" min="1" max="10" class="w-12 text-center bg-transparent text-sm font-bold text-[#2B2623] focus:outline-none">
+                            <button type="button" class="btn-qty-plus w-8 h-8 rounded bg-white hover:bg-gray-100 flex items-center justify-center text-[#2B2623] font-bold shadow-sm" aria-label="Arttır">+</button>
+                        </div>
+
+                        <!-- Add to Cart Button -->
+                        <button type="submit" class="flex-1 btn-boutique py-3.5 text-sm font-bold shadow-md">
+                            <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+                            <span>Sepete Ekle</span>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- 3 Installments Accordion Box -->
+                <div class="border border-[#EAE3D9] rounded-xl overflow-hidden mt-6">
+                    <div class="bg-[#FAF7F2] p-3.5 flex items-center justify-between cursor-pointer" onclick="document.getElementById('installments-breakdown').classList.toggle('hidden')">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="credit-card" class="w-4 h-4 text-[#B85032]"></i>
+                            <span class="text-xs font-bold text-[#2B2623]">Taksit Seçenekleri (Maks. 3 Taksit Kuralı)</span>
+                        </div>
+                        <span class="text-xs text-[#B85032] font-semibold flex items-center gap-1">
+                            Tabloyu Gör
+                            <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
+                        </span>
+                    </div>
+
+                    <div id="installments-breakdown" class="p-4 bg-white border-t border-[#EAE3D9] text-xs space-y-3">
+                        <p class="text-[11px] text-[#786C63] leading-relaxed">
+                            ⚠️ <strong>Yasal Bilgilendirme:</strong> BDDK ve Ticaret Bakanlığı mevzuatları uyarınca, hazır giyim ve tekstil alışverişlerinde kredi kartına uygulanabilen en fazla taksit sayısı <strong>3 aydır</strong>.
+                        </p>
+                        
+                        <table class="installment-table">
+                            <thead>
+                                <tr>
+                                    <th>Taksit Sayısı</th>
+                                    <th>Aylık Tutar</th>
+                                    <th>Toplam Tutar</th>
+                                    <th>Durum</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for row in installments_data %}
+                                <tr>
+                                    <td class="font-bold">{{ row.title }}</td>
+                                    <td class="text-[#B85032] font-semibold">{{ row.monthly|floatformat:2 }} ₺</td>
+                                    <td>{{ row.total|floatformat:2 }} ₺</td>
+                                    <td><span class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-[10px] font-bold">{{ row.badge }}</span></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+                        <div class="flex items-center justify-center gap-3 pt-2 text-[10px] text-[#786C63]">
+                            <span>Geçerli Kartlar:</span>
+                            {% for card in bank_cards %}
+                            <span class="font-semibold text-[#2B2623]">{{ card }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Product Detailed Information Accordion / Tabs -->
+    <div class="mt-12 bg-white rounded-2xl border border-[#EAE3D9] p-6 sm:p-8 shadow-sm">
+        <h2 class="font-serif text-2xl font-bold text-[#2B2623] mb-6 border-b border-[#EAE3D9] pb-4">
+            Ürün Özellikleri & Kalıp Rehberi
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-xs text-[#2B2623] leading-relaxed">
+            
+            <!-- Description & Fabric -->
+            <div class="space-y-4">
+                <div class="flex items-center gap-2 text-sm font-bold text-[#B85032]">
+                    <i data-lucide="sparkles" class="w-4 h-4"></i>
+                    <span>Kumaş ve Doku Detayı</span>
+                </div>
+                <div class="bg-[#FAF7F2] p-4 rounded-xl border border-[#EAE3D9] space-y-2">
+                    <p>{{ product.description }}</p>
+                    {% if product.fabric_info %}
+                    <p class="font-bold text-[#2B2623] pt-1">
+                        Kumaş Türü: <span class="font-normal text-[#786C63]">{{ product.fabric_info }}</span>
+                    </p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Model & Size Details -->
+            <div class="space-y-4">
+                <div class="flex items-center gap-2 text-sm font-bold text-[#B85032]">
+                    <i data-lucide="user" class="w-4 h-4"></i>
+                    <span>Manken ve Beden Bilgisi</span>
+                </div>
+                <div class="bg-[#FAF7F2] p-4 rounded-xl border border-[#EAE3D9] space-y-2">
+                    {% if product.model_measurements %}
+                    <p>{{ product.model_measurements }}</p>
+                    {% else %}
+                    <p>Manken Ölçüleri: Boy: 1.75m, Göğüs: 104cm, Bel: 86cm, Basen: 114cm. Manken üzerindeki beden: <strong>44 / XL</strong>.</p>
+                    {% endif %}
+                    <p class="text-[11px] text-[#786C63] pt-2">
+                        💡 <em>Kalıbımız tamdır; kendi bedeninizi tercih edebilirsiniz. Dökümlü ve rahat bir duruş için bir beden büyük seçebilirsiniz.</em>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Care & Shipping -->
+            <div class="space-y-4">
+                <div class="flex items-center gap-2 text-sm font-bold text-[#B85032]">
+                    <i data-lucide="heart-handshake" class="w-4 h-4"></i>
+                    <span>Bakım ve Yıkama Talimatı</span>
+                </div>
+                <div class="bg-[#FAF7F2] p-4 rounded-xl border border-[#EAE3D9] space-y-2">
+                    <p>{{ product.washing_instructions }}</p>
+                    <ul class="list-disc list-inside space-y-1 text-[11px] text-[#786C63] pt-2">
+                        <li>30°C'de narin/hassas programda yıkayınız.</li>
+                        <li>Ağartıcı ve optik deterjan kullanmayınız.</li>
+                        <li>Düşük ısıda tersten ütüleyiniz.</li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Related Products -->
+    {% if related_products %}
+    <div class="mt-16">
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <span class="text-xs uppercase font-bold tracking-wider text-[#B85032]">Kombininizi Tamamlayın</span>
+                <h3 class="font-serif text-2xl sm:text-3xl font-bold text-[#2B2623]">Benzer Tasarımlar</h3>
+            </div>
+            <a href="{{ product.category.get_absolute_url }}" class="btn-boutique-outline text-xs px-4 py-2">
+                Tümünü Gör
+            </a>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+            {% for item in related_products %}
+            <div class="product-card flex flex-col justify-between">
+                <div class="product-image-container">
+                    <a href="{{ item.get_absolute_url }}">
+                        <img src="{{ item.primary_image.url|default:'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=600&auto=format&fit=crop' }}" alt="{{ item.name }}" loading="lazy">
+                    </a>
+                </div>
+                <div class="p-4 flex flex-col flex-1 justify-between">
+                    <div>
+                        <span class="text-[10px] uppercase font-semibold text-[#B85032]">{{ item.category.name }}</span>
+                        <h4 class="text-xs font-bold text-[#2B2623] mt-1 line-clamp-1">
+                            <a href="{{ item.get_absolute_url }}">{{ item.name }}</a>
+                        </h4>
+                    </div>
+                    <div class="mt-3 pt-2 border-t border-[#F3EDE2] flex items-center justify-between">
+                        <span class="text-xs font-bold text-[#2B2623]">{{ item.current_price|floatformat:2 }} ₺</span>
+                        <a href="{{ item.get_absolute_url }}" class="text-[11px] text-[#B85032] font-semibold hover:underline">İncele →</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+
+<!-- Size Chart Guide Modal -->
+<div id="size-modal" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl animate-fade-in relative max-h-[90vh] overflow-y-auto">
+        <button type="button" onclick="document.getElementById('size-modal').classList.add('hidden')" class="absolute top-5 right-5 text-gray-400 hover:text-black">
+            <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
+
+        <div class="flex items-center gap-3 mb-4">
+            <i data-lucide="ruler" class="w-6 h-6 text-[#B85032]"></i>
+            <h3 class="font-serif text-2xl font-bold text-[#2B2623]">Gala Butik Büyük Beden Tablosu</h3>
+        </div>
+
+        <p class="text-xs text-[#786C63] mb-6">
+            Ölçülerimiz Türkiye standartlarına uygun olup cm cinsindendir. Göğüs, bel ve basen ölçünüzü mezura ile alarak en doğru bedeni bulabilirsiniz.
+        </p>
+
+        <div class="overflow-x-auto">
+            <table class="installment-table text-xs">
+                <thead>
+                    <tr>
+                        <th>Beden Kodu</th>
+                        <th>Numara Beden</th>
+                        <th>Göğüs (cm)</th>
+                        <th>Bel (cm)</th>
+                        <th>Basen (cm)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="font-bold">M</td>
+                        <td>38 - 40</td>
+                        <td>92 - 96</td>
+                        <td>74 - 78</td>
+                        <td>100 - 104</td>
+                    </tr>
+                    <tr>
+                        <td class="font-bold">L</td>
+                        <td>40 - 42</td>
+                        <td>98 - 102</td>
+                        <td>80 - 84</td>
+                        <td>106 - 110</td>
+                    </tr>
+                    <tr class="bg-[#FBF0EB]">
+                        <td class="font-bold text-[#B85032]">XL</td>
+                        <td>42 - 44</td>
+                        <td>104 - 108</td>
+                        <td>86 - 90</td>
+                        <td>112 - 116</td>
+                    </tr>
+                    <tr class="bg-[#FBF0EB]">
+                        <td class="font-bold text-[#B85032]">2XL</td>
+                        <td>46 - 48</td>
+                        <td>110 - 116</td>
+                        <td>92 - 98</td>
+                        <td>118 - 124</td>
+                    </tr>
+                    <tr class="bg-[#FBF0EB]">
+                        <td class="font-bold text-[#B85032]">3XL</td>
+                        <td>50 - 52</td>
+                        <td>118 - 124</td>
+                        <td>100 - 106</td>
+                        <td>126 - 132</td>
+                    </tr>
+                    <tr class="bg-[#FBF0EB]">
+                        <td class="font-bold text-[#B85032]">4XL</td>
+                        <td>54 - 56</td>
+                        <td>126 - 132</td>
+                        <td>108 - 114</td>
+                        <td>134 - 140</td>
+                    </tr>
+                    <tr class="bg-[#FBF0EB]">
+                        <td class="font-bold text-[#B85032]">5XL</td>
+                        <td>58 - 60</td>
+                        <td>134 - 142</td>
+                        <td>116 - 124</td>
+                        <td>142 - 150</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-6 p-4 bg-[#FAF7F2] rounded-xl border border-[#EAE3D9] text-xs text-[#786C63] flex items-center justify-between">
+            <span>Beden konusunda tereddüt ediyorsanız WhatsApp hattımızdan stil danışmanımıza danışabilirsiniz.</span>
+            <a href="https://wa.me/{{ boutique.whatsapp|cut:' '|cut:'+'|cut:'('|cut:')'|cut:'-' }}" target="_blank" class="btn-boutique text-xs px-3 py-1.5 flex-shrink-0">
+                Danışmanla Görüş
+            </a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

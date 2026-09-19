@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% load static humanize %}
+
+{% block title %}Siparişiniz Alındı #{{ order.order_number }} | {{ boutique.name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    
+    <!-- Success Banner -->
+    <div class="bg-white rounded-2xl border border-[#EAE3D9] p-8 sm:p-12 shadow-sm text-center space-y-6">
+        
+        <div class="w-20 h-20 bg-green-50 border-2 border-green-500 text-green-600 rounded-full flex items-center justify-center mx-auto shadow-sm">
+            <i data-lucide="check" class="w-10 h-10 stroke-[3]"></i>
+        </div>
+
+        <div class="space-y-2">
+            <span class="text-xs uppercase font-bold tracking-widest text-[#B85032]">Alışverişiniz İçin Teşekkür Ederiz</span>
+            <h1 class="font-serif text-3xl sm:text-4xl font-bold text-[#2B2623]">
+                Siparişiniz Başarıyla Oluşturuldu!
+            </h1>
+            <p class="text-xs sm:text-sm text-[#786C63] max-w-md mx-auto">
+                Sipariş onay e-postası ve detaylar <strong>{{ order.email }}</strong> adresinize iletilmiştir.
+            </p>
+        </div>
+
+        <!-- Order Key Metrics Box -->
+        <div class="bg-[#FAF7F2] p-6 rounded-xl border border-[#EAE3D9] grid grid-cols-2 sm:grid-cols-4 gap-4 text-left">
+            <div>
+                <span class="text-[11px] text-[#786C63] block">Sipariş Numarası:</span>
+                <span class="text-sm font-extrabold text-[#B85032]">#{{ order.order_number }}</span>
+            </div>
+            <div>
+                <span class="text-[11px] text-[#786C63] block">Tarih:</span>
+                <span class="text-xs font-bold text-[#2B2623]">{{ order.created_at|date:"d.m.Y H:i" }}</span>
+            </div>
+            <div>
+                <span class="text-[11px] text-[#786C63] block">Ödeme & Taksit:</span>
+                <span class="text-xs font-bold text-[#2B2623]">
+                    {% if order.installments > 1 %}
+                    {{ order.installments }} Taksit (Maks 3)
+                    {% else %}
+                    Tek Çekim
+                    {% endif %}
+                </span>
+            </div>
+            <div>
+                <span class="text-[11px] text-[#786C63] block">Toplam Tutar:</span>
+                <span class="text-sm font-extrabold text-[#2B2623]">{{ order.total_amount|floatformat:2 }} ₺</span>
+            </div>
+        </div>
+
+        <!-- Delivery & Shipping Details -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-left text-xs pt-4 border-t border-[#EAE3D9]">
+            
+            <div class="bg-[#FCFAF7] p-4 rounded-lg border border-[#EAE3D9] space-y-1">
+                <h4 class="font-bold text-sm text-[#2B2623] mb-2 flex items-center gap-1.5">
+                    <i data-lucide="map-pin" class="w-4 h-4 text-[#B85032]"></i>
+                    Teslimat Adresi
+                </h4>
+                <p class="font-bold text-[#2B2623]">{{ order.full_name }}</p>
+                <p class="text-[#786C63]">{{ order.phone }}</p>
+                <p class="text-[#786C63]">{{ order.full_address }}</p>
+            </div>
+
+            <div class="bg-[#FCFAF7] p-4 rounded-lg border border-[#EAE3D9] space-y-1">
+                <h4 class="font-bold text-sm text-[#2B2623] mb-2 flex items-center gap-1.5">
+                    <i data-lucide="truck" class="w-4 h-4 text-[#B85032]"></i>
+                    Kargo ve Durum
+                </h4>
+                <p class="text-[#786C63]">Kargo Firması: <strong class="text-[#2B2623]">{{ order.cargo_company }}</strong></p>
+                <p class="text-[#786C63]">Durum: <span class="bg-blue-100 text-blue-800 font-bold px-2 py-0.5 rounded text-[11px]">{{ order.get_status_display }}</span></p>
+                <p class="text-[11px] text-[#786C63] pt-1">
+                    * Siparişiniz kargoya verildiğinde SMS ve E-posta ile takip linki gönderilecektir.
+                </p>
+            </div>
+
+        </div>
+
+        <!-- Ordered Items Table -->
+        <div class="text-left pt-6 border-t border-[#EAE3D9]">
+            <h4 class="font-serif text-lg font-bold text-[#2B2623] mb-4">Sipariş Edilen Ürünler</h4>
+            <div class="border border-[#EAE3D9] rounded-xl overflow-hidden divide-y divide-[#EAE3D9]">
+                {% for item in order.items.all %}
+                <div class="p-4 flex items-center justify-between text-xs">
+                    <div class="flex items-center gap-3">
+                        {% if item.product_image_url %}
+                        <img src="{{ item.product_image_url }}" alt="{{ item.product_name }}" class="w-12 h-14 rounded object-cover border border-[#EAE3D9]">
+                        {% endif %}
+                        <div>
+                            <p class="font-bold text-[#2B2623]">{{ item.product_name }}</p>
+                            <p class="text-[11px] text-[#786C63]">Beden: {{ item.size_title }} • Adet: {{ item.quantity }}</p>
+                        </div>
+                    </div>
+                    <span class="font-extrabold text-sm text-[#2B2623]">{{ item.total_price|floatformat:2 }} ₺</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="pt-6 flex flex-col sm:flex-row justify-center gap-4">
+            <a href="{% url 'store:home' %}" class="btn-boutique text-xs px-8 py-3.5">
+                <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+                <span>Alışverişe Devam Et</span>
+            </a>
+            <button onclick="window.print()" class="btn-boutique-outline text-xs px-6 py-3.5">
+                <i data-lucide="printer" class="w-4 h-4"></i>
+                <span>Sipariş Özetini Yazdır</span>
+            </button>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}
